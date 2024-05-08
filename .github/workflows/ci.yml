@@ -28,7 +28,7 @@ jobs:
         runs-on: "ubuntu-latest"
         if: "${{ needs.check-basics.outputs.continue == '1' }}"
         container:
-            image: "ghcr.io/epitech/coding-style-checker:latest"
+            image: "epitechcontent/epitest-docker:latest"
         steps:
             -   name: "Checkout"
                 uses: "actions/checkout@v4.1.1"
