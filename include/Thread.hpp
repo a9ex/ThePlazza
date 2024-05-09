@@ -5,8 +5,8 @@
 ** Thread.hpp
 */
 
-#ifndef __ITHREAD_HPP_
-    #define __ITHREAD_HPP_
+#ifndef __THREAD_HPP_
+    #define __THREAD_HPP_
     #include <pthread.h>
 
 typedef void *(*ThreadFunction)(void *);
@@ -29,13 +29,13 @@ class Thread : public IThread {
         } ThreadStatus;
         Thread();
         ~Thread();
-        void start(ThreadFunction function, void *arg);
-        void cancel();
-        void *join();
-        void detach();
+        void start(ThreadFunction function, void *arg) override;
+        void cancel() override;
+        void *join() override;
+        void detach() override;
     private:
         pthread_t m_thread;
         ThreadStatus m_status;
 };
 
-#endif /* !__ITHREAD_HPP_ */
+#endif /* !__THREAD_HPP_ */

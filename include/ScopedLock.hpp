@@ -5,8 +5,8 @@
 ** ScopedLock.hpp
 */
 
-#ifndef __ISCOPEDLOCK_HPP_
-    #define __ISCOPEDLOCK_HPP_
+#ifndef __SCOPEDLOCK_HPP_
+    #define __SCOPEDLOCK_HPP_
     #include "Mutex.hpp"
 
 class IScopedLock {
@@ -22,4 +22,4 @@ class ScopedLock : public IScopedLock {
         ~ScopedLock();
 };
 
-#endif /* !__ISCOPEDLOCK_HPP_ */
+#endif /* !__SCOPEDLOCK_HPP_ */

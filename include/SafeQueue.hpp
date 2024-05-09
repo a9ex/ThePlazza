@@ -5,8 +5,8 @@
 ** SafeQueue.hpp
 */
 
-#ifndef __ISAFEQUEUE_HPP_
-    #define __ISAFEQUEUE_HPP_
+#ifndef __SAFEQUEUE_HPP_
+    #define __SAFEQUEUE_HPP_
     #include <stack>
     #include <mutex>
 
@@ -21,11 +21,11 @@ class SafeQueue : public ISafeQueue {
     public:
         SafeQueue();
         ~SafeQueue();
-        void push(int value);
-        bool tryPop(int &value);
+        void push(int value) override;
+        bool tryPop(int &value) override;
     private:
         std::stack<int> m_stack;
         std::mutex m_mutex;
 };
 
-#endif /* !__ISAFEQUEUE_HPP_ */
+#endif /* !__SAFEQUEUE_HPP_ */

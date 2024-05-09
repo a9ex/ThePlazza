@@ -5,8 +5,8 @@
 ** Mutex.hpp
 */
 
-#ifndef __IMUTEX_HPP_
-    #define __IMUTEX_HPP_
+#ifndef __MUTEX_HPP_
+    #define __MUTEX_HPP_
     #include <pthread.h>
 
 class IMutex {
@@ -23,9 +23,9 @@ class Mutex : public IMutex {
     public:
         Mutex();
         ~Mutex();
-        void lock();
-        void unlock();
-        void trylock();
+        void lock() override;
+        void unlock() override;
+        void trylock() override;
 };
 
-#endif /* !__IMUTEX_HPP_ */
+#endif /* !__MUTEX_HPP_ */
