@@ -29,7 +29,7 @@ Test(Mutex, test_impl)
 {
     int i = 0;
     int nb = 0;
-    Thread<ThreadFunction> threads[numberOfThreads];
+    Thread threads[numberOfThreads];
 
     for (; numberOfThreads > i; ++i)
         threads[i].start(incrementNumber, &nb);

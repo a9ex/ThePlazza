@@ -30,7 +30,7 @@ static void *pushStack(void *arg)
 Test(SafeQueue, test_impl)
 {
     int i = 0;
-    Thread<ThreadFunction> pushThreads[numberOfThreads];
+    Thread pushThreads[numberOfThreads];
     int expected[numberOfThreads] = { 0 };
 
     for (; numberOfThreads > i; ++i)
