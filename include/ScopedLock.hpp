@@ -9,12 +9,7 @@
     #define __SCOPEDLOCK_HPP_
     #include "Mutex.hpp"
 
-class IScopedLock {
-    public:
-        virtual ~IScopedLock() = default;
-};
-
-class ScopedLock : public IScopedLock {
+class ScopedLock {
     private:
         Mutex &m_mutex;
     public:

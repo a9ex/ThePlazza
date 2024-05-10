@@ -12,17 +12,7 @@
     #include <condition_variable>
 
 template <typename T>
-class ISafeQueue {
-    public:
-        virtual ~ISafeQueue() = default;
-        virtual void push(T value) = 0;
-        virtual bool tryPop(T &value) = 0;
-        virtual T pop() = 0;
-        virtual bool empty() const = 0;
-};
-
-template <typename T>
-class SafeQueue : public ISafeQueue<T> {
+class SafeQueue {
     public:
         SafeQueue()
         {}
@@ -30,7 +20,7 @@ class SafeQueue : public ISafeQueue<T> {
         ~SafeQueue()
         {}
 
-        void push(T value) override
+        void push(T value)
         {
             {
                 std::lock_guard<std::mutex> lock(m_mutex);
@@ -40,7 +30,7 @@ class SafeQueue : public ISafeQueue<T> {
             m_cv.notify_one();
         }
 
-        bool tryPop(T &value) override
+        bool tryPop(T &value)
         {
             bool valuePopped = false;
             std::unique_lock<std::mutex> lock(m_mutex);
@@ -53,7 +43,7 @@ class SafeQueue : public ISafeQueue<T> {
             return valuePopped;
         }
 
-        T pop() override
+        T pop()
         {
             T value = 0;
 
@@ -67,7 +57,7 @@ class SafeQueue : public ISafeQueue<T> {
             return value;
         }
 
-        bool empty() const override
+        bool empty() const noexcept
         {
             return m_stack.empty();
         }

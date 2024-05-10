@@ -10,13 +10,7 @@
     #include "SafeQueue.hpp"
     #include "Thread.hpp"
 
-class IThreadPool {
-    public:
-        virtual ~IThreadPool() = default;
-        virtual void run() = 0;
-};
-
-class ThreadPool : public IThreadPool {
+class ThreadPool {
     public:
         ThreadPool(std::size_t threadsLimit,
             SafeQueue<ThreadFunction> &queue)
@@ -27,7 +21,7 @@ class ThreadPool : public IThreadPool {
         ~ThreadPool()
         {}
 
-        void run() override
+        void run()
         {
             std::size_t i = 0;
             std::size_t j = 0;
