@@ -5,31 +5,38 @@
 ** Main.cpp
 */
 
+#include <unistd.h>
+#include <chrono>
 #include <iostream>
+#include <random>
 #include <thread>
-#include "ProducerConsumer.hpp"
 #include "SafeQueue.hpp"
+#include "ThreadPool.hpp"
 
 #ifndef CRITERION
 
+void *printRandomNumber(void *arg)
+{
+    Thread *this_thread = (Thread *) arg;
+
+    std::uniform_int_distribution<std::mt19937::result_type> range(1, 9);
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    this_thread->sleep(1);
+    std::cout << range(rng) << std::endl;
+    return nullptr;
+}
+
 int main(void)
 {
-    SafeQueue queue;
-    int i = 0;
-    const int producersNumber = 3;
-    const int consumersNumber = 100;
-    std::thread producers[producersNumber];
-    std::thread consumers[consumersNumber];
+    std::size_t i = 0;
+    SafeQueue<ThreadFunction> queue;
+    ThreadPool pool(8, queue);
 
-    for (; producersNumber > i; ++i)
-        producers[i] = std::thread(Producer, &queue);
-    for (i = 0; consumersNumber > i; ++i)
-        consumers[i] = std::thread(Consumer, &queue);
-    for (i = 0; producersNumber > i; ++i)
-        producers[i].join();
-    for (i = 0; consumersNumber > i; ++i)
-        consumers[i].join();
-    std::cout << "stack is empty: " << queue.tryPop(i) << std::endl;
+    for (; i < 1000; ++i)
+        queue.push(printRandomNumber);
+    pool.run();
+    return 0;
 }
 
 #endif

@@ -9,7 +9,7 @@
 #include "SafeQueue.hpp"
 #include <criterion/criterion.h>
 
-static SafeQueue queue;
+static SafeQueue<int> queue;
 const int numberOfThreads = 32;
 
 static void *popStack(void *arg)
@@ -30,7 +30,7 @@ static void *pushStack(void *arg)
 Test(SafeQueue, test_impl)
 {
     int i = 0;
-    Thread pushThreads[numberOfThreads];
+    Thread<ThreadFunction> pushThreads[numberOfThreads];
     int expected[numberOfThreads] = { 0 };
 
     for (; numberOfThreads > i; ++i)

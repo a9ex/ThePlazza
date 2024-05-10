@@ -28,7 +28,7 @@ Test(ScopedLock, test_impl)
 {
     int i = 0;
     int nb = 0;
-    Thread threads[numberOfThreads];
+    Thread<ThreadFunction> threads[numberOfThreads];
 
     for (; numberOfThreads > i; ++i)
         threads[i].start(incrementNumber, &nb);
