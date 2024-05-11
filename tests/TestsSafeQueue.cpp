@@ -5,9 +5,9 @@
 ** TestsSafeQueue.cpp
 */
 
-#include "Thread.hpp"
-#include "SafeQueue.hpp"
+#include <thread>
 #include <criterion/criterion.h>
+#include "SafeQueue.hpp"
 
 static SafeQueue<int> queue;
 const int numberOfThreads = 32;
@@ -36,17 +36,17 @@ static void *pushStack(void *arg)
 Test(SafeQueue, test_try_pop_impl)
 {
     int i = 0;
-    Thread pushThreads[numberOfThreads];
+    std::thread pushThreads[numberOfThreads];
     int expected[numberOfThreads] = { 0 };
 
     for (; numberOfThreads > i; ++i)
         expected[i] = i;
     for (i = 0; numberOfThreads > i; ++i)
-        pushThreads[i].start(pushStack, &(expected[i]));
+        pushThreads[i] = std::thread(pushStack, &(expected[i]));
     for (i = 0; numberOfThreads > i; ++i)
         pushThreads[i].join();
     for (i = 0; numberOfThreads > i; ++i)
-        pushThreads[i].start(tryPopStack, &(expected[i]));
+        pushThreads[i] = std::thread(tryPopStack, &(expected[i]));
     for (i = 0; numberOfThreads > i; ++i)
         pushThreads[i].join();
     for (i = 0; numberOfThreads > i; ++i)
@@ -56,7 +56,7 @@ Test(SafeQueue, test_try_pop_impl)
 Test(SafeQueue, test_pop_impl)
 {
     int i = 0;
-    Thread pushThreads[numberOfThreads];
+    std::thread pushThreads[numberOfThreads];
     int expected[numberOfThreads] = { 0 };
     int current[numberOfThreads] = { 0 };
 
@@ -64,11 +64,11 @@ Test(SafeQueue, test_pop_impl)
     for (; numberOfThreads > i; ++i)
         expected[i] = i;
     for (i = 0; numberOfThreads > i; ++i)
-        pushThreads[i].start(pushStack, &(expected[i]));
+        pushThreads[i] = std::thread(pushStack, &(expected[i]));
     for (i = 0; numberOfThreads > i; ++i)
         pushThreads[i].join();
     for (i = 0; numberOfThreads > i; ++i)
-        pushThreads[i].start(popStack, &(current[i]));
+        pushThreads[i] = std::thread(popStack, &(current[i]));
     for (i = 0; numberOfThreads > i; ++i)
         pushThreads[i].join();
     for (i = 0; numberOfThreads > i; ++i)
