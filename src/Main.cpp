@@ -15,14 +15,12 @@
 
 #ifndef CRITERION
 
-void *printRandomNumber(void *arg)
+void *printRandomNumber()
 {
-    Thread *this_thread = (Thread *) arg;
-
     std::uniform_int_distribution<std::mt19937::result_type> range(1, 9);
     std::random_device dev;
     std::mt19937 rng(dev());
-    this_thread->sleep(1);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     std::cout << range(rng) << std::endl;
     return nullptr;
 }
@@ -30,7 +28,7 @@ void *printRandomNumber(void *arg)
 int main(void)
 {
     std::size_t i = 0;
-    SafeQueue<ThreadFunction> queue;
+    SafeQueue<ThreadPool::ThreadFunction> queue;
     ThreadPool pool(8, queue);
 
     for (; i < 1000; ++i)

@@ -7,7 +7,7 @@
 
 #ifndef __SAFEQUEUE_HPP_
     #define __SAFEQUEUE_HPP_
-    #include <stack>
+    #include <queue>
     #include <mutex>
     #include <condition_variable>
 
@@ -25,7 +25,7 @@ class SafeQueue {
             {
                 std::lock_guard<std::mutex> lock(m_mutex);
 
-                m_stack.push(value);
+                m_queue.push(value);
             }
             m_cv.notify_one();
         }
@@ -35,9 +35,9 @@ class SafeQueue {
             bool valuePopped = false;
             std::unique_lock<std::mutex> lock(m_mutex);
 
-            if (0 < m_stack.size()) {
-                value = m_stack.top();
-                m_stack.pop();
+            if (0 < m_queue.size()) {
+                value = m_queue.front();
+                m_queue.pop();
                 valuePopped = true;
             }
             return valuePopped;
@@ -51,19 +51,19 @@ class SafeQueue {
                 std::unique_lock<std::mutex> lock(m_mutex);
 
                 m_cv.wait(lock, [ & ] ( ) { return !this->empty(); });
-                value = m_stack.top();
-                m_stack.pop();
+                value = m_queue.front();
+                m_queue.pop();
             }
             return value;
         }
 
         bool empty() const noexcept
         {
-            return m_stack.empty();
+            return m_queue.empty();
         }
 
     private:
-        std::stack<T> m_stack;
+        std::queue<T> m_queue;
         std::mutex m_mutex;
         std::condition_variable m_cv;
 };
