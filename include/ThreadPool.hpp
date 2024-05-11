@@ -7,6 +7,7 @@
 
 #ifndef __THREAD_POOL_HPP_
     #define __THREAD_POOL_HPP_
+    #include <functional>
     #include "SafeQueue.hpp"
 
 class ThreadPool {
