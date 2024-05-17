@@ -12,35 +12,27 @@
 
 class ThreadPool {
     public:
+
         using ThreadFunction = std::function<void()>;
+        using ThreadFunctionCallback = std::function<void(ThreadFunction)>;
 
         ThreadPool(std::size_t threadsLimit,
-            SafeQueue<ThreadPool::ThreadFunction> &queue)
-        : m_threadsLimit(threadsLimit),
-            m_queue(queue)
+            SafeQueue<ThreadFunction> &queue) : m_threadsLimit(threadsLimit),
+                m_queue(queue)
         {}
 
         ~ThreadPool()
         {}
 
-        void run()
-        {
-            std::size_t i = 0;
-            std::size_t j = 0;
-            std::thread *threads = new std::thread[m_threadsLimit];
+        void run();
 
-            while (!m_queue.empty()) {
-                for (i = 0; i < m_threadsLimit && !m_queue.empty(); ++i)
-                    threads[i] = std::thread(m_queue.pop());
-                for (j = 0; j < i; ++j)
-                    threads[j].join();
-            }
-            delete[] threads;
-        }
+        void producer(ThreadFunction task);
 
     private:
         std::size_t m_threadsLimit;
-        SafeQueue<ThreadPool::ThreadFunction> &m_queue;
+        SafeQueue<ThreadFunction> &m_queue;
+
+        void consumer();
 };
 
 #endif /* !__THREAD_POOL_HPP_ */
