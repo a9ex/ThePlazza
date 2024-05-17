@@ -10,10 +10,10 @@
 #include <unistd.h>
 
 namespace process {
-    class Process {
+    class ForkProcess {
     public:
-        Process();
-        ~Process() { this->kill(); }
+        ForkProcess();
+        ~ForkProcess() { this->kill(); }
 
         void kill();
         bool isAlive() const;
