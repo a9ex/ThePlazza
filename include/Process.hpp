@@ -13,12 +13,12 @@ namespace process {
     class ForkProcess {
     public:
         ForkProcess();
-        ~ForkProcess() { this->kill(); }
+        ~ForkProcess() = default;
 
-        void kill();
         bool isAlive() const;
 
         pid_t getPid() const { return this->_pid; }
+        bool isChild() const { return this->_pid == 0; }
     private:
         pid_t _pid;
     };
