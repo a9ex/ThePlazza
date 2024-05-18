@@ -16,9 +16,7 @@ class ThreadPool {
         using ThreadFunction = std::function<void()>;
         using ThreadFunctionCallback = std::function<void(ThreadFunction)>;
 
-        ThreadPool(std::size_t threadsLimit,
-            SafeQueue<ThreadFunction> &queue) : m_threadsLimit(threadsLimit),
-                m_queue(queue)
+        ThreadPool(std::size_t threadsLimit) : m_threadsLimit(threadsLimit)
         {}
 
         ~ThreadPool()
@@ -26,11 +24,11 @@ class ThreadPool {
 
         void run();
 
-        void producer(ThreadFunction task);
+        void addTask(ThreadFunction task);
 
     private:
         std::size_t m_threadsLimit;
-        SafeQueue<ThreadFunction> &m_queue;
+        SafeQueue<ThreadFunction> m_queue;
 
         void consumer();
 };

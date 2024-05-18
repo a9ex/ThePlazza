@@ -21,7 +21,7 @@ void ThreadPool::run()
     delete[] threads;
 }
 
-void ThreadPool::producer(ThreadFunction task)
+void ThreadPool::addTask(ThreadFunction task)
 {
     m_queue.push(task);
 }
