@@ -11,3 +11,6 @@ a.out
 .idea
 unit_tests
 plazza
+include/Mutex.hpp
+tests/TestsMutex.cpp
+include/
