@@ -5,6 +5,7 @@
 ** Pipe.cpp
 */
 
+#include <stdio.h>
 #include "File.hpp"
 
 file::Pipe::Pipe(std::string const &path, Mode mode, bool init)
@@ -12,11 +13,15 @@ file::Pipe::Pipe(std::string const &path, Mode mode, bool init)
     mode_t m = (mode == READ ? O_RDONLY : O_WRONLY);
 
     if (init)
-        if (mkfifo(path.c_str(), m) != 0)
+        if (mkfifo(path.c_str(), 0777) != 0) {
+            perror("mkfifo");
             throw CreateException("Failed to create pipe");
+        }
     this->_fd = open(path.c_str(), m);
-    if (this->_fd == -1)
+    if (this->_fd == -1) {
+        perror("open");
         throw InitException("Failed to open pipe");
+    }
 
     this->_mode = mode;
 }
@@ -24,6 +29,13 @@ file::Pipe::Pipe(std::string const &path, Mode mode, bool init)
 void file::Pipe::destroy()
 {
     close(this->_fd);
+}
+
+void file::Pipe::writeSingle(char c)
+{
+    if (this->_mode != WRITE)
+        throw InvalidModeException("Cannot write to a read-only pipe");
+    write(this->_fd, &c, 1);
 }
 
 void file::Pipe::writeBuf(std::vector<char> buffer)

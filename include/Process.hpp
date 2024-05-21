@@ -7,12 +7,13 @@
 
 #pragma once
 
+#include <functional>
 #include <unistd.h>
 
 namespace process {
     class ForkProcess {
     public:
-        ForkProcess();
+        ForkProcess(std::function<void()> child_func = []() {});
         ~ForkProcess() = default;
 
         bool isAlive() const;

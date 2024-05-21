@@ -6,19 +6,15 @@
 */
 
 #include <iostream>
-#include <Process.hpp>
+#include "Process.hpp"
+#include "File.hpp"
+#include "Plazza.hpp"
 
 #ifndef CRITERION
 
 int main(void)
 {
-    process::ForkProcess fp;
-
-    if (fp.isChild()) {
-        std::cout << "Hello from child!\n";
-    } else {
-        std::cout << "Hello from parent!\n";
-    }
+    plazza::Kitchen kitchen("1");
 
     return 0;
 }

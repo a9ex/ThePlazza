@@ -8,7 +8,7 @@
 NAME			:=	plazza
 CC				:=	g++
 CPPFLAGS		:=	-Iinclude/
-CXXFLAGS		:=	-Wall -Wextra -Werror -pedantic -std=c++11 -fPIE 	 \
+CXXFLAGS		:=	-Wall -Wextra -Werror -pedantic -std=c++17 -fPIE 	 \
 					-fno-delete-null-pointer-checks -fno-strict-overflow \
 					-fno-strict-aliasing -ftrivial-auto-var-init=zero    \
 					-Wformat -Wimplicit-fallthrough 					 \
