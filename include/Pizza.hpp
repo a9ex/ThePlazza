@@ -13,9 +13,9 @@ namespace plazza {
      * Required by the subject
      */
     enum PizzaType {
-        Regina = 1 ,
-        Margarita = 2 ,
-        Americana = 4 ,
+        Regina = 1,
+        Margarita = 2,
+        Americana = 4,
         Fantasia = 8
     };
 
