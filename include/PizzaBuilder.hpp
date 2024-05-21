@@ -24,7 +24,7 @@ namespace plazza {
              * @param type the type of the pizza
              * @return PizzaBuilder& the builder (to chain calls)
              */
-            PizzaBuilder &setPizzaType(PizzaType type);
+            PizzaBuilder &setPizzaType(Pizza::PizzaType type);
             /**
              * @brief Set the name of the pizza
              *
@@ -45,7 +45,7 @@ namespace plazza {
              * @param ingredients a vector of ingredients
              * @return PizzaBuilder& the builder (to chain calls)
              */
-            PizzaBuilder &setIngredients(const std::vector<PizzaIngredient> &ingredients);
+            PizzaBuilder &setIngredients(const std::vector<Pizza::PizzaIngredient> &ingredients);
 
             /**
              * @brief Build the pizza

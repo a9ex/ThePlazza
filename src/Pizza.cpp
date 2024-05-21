@@ -12,7 +12,7 @@ double plazza::Pizza::getCookingTime() const
     return _cookingTime;
 }
 
-plazza::PizzaType plazza::Pizza::getType() const
+plazza::Pizza::PizzaType plazza::Pizza::getType() const
 {
     return _type;
 }
@@ -22,7 +22,7 @@ std::string plazza::Pizza::getName() const
     return _name;
 }
 
-std::vector<plazza::PizzaIngredient> plazza::Pizza::getIngredients() const
+std::vector<plazza::Pizza::PizzaIngredient> plazza::Pizza::getIngredients() const
 {
     return _ingredients;
 }
@@ -32,7 +32,7 @@ void plazza::Pizza::setCookingTime(double time)
     _cookingTime = time;
 }
 
-void plazza::Pizza::setType(plazza::PizzaType type)
+void plazza::Pizza::setType(plazza::Pizza::PizzaType type)
 {
     _type = type;
 }
@@ -42,7 +42,7 @@ void plazza::Pizza::setName(const std::string &name)
     _name = name;
 }
 
-void plazza::Pizza::setIngredients(const std::vector<plazza::PizzaIngredient> &ingredients)
+void plazza::Pizza::setIngredients(const std::vector<plazza::Pizza::PizzaIngredient> &ingredients)
 {
     _ingredients = ingredients;
 }
