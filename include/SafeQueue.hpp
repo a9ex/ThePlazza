@@ -5,27 +5,67 @@
 ** SafeQueue.hpp
 */
 
-#ifndef __ISAFEQUEUE_HPP_
-    #define __ISAFEQUEUE_HPP_
-    #include <stack>
+#ifndef __SAFEQUEUE_HPP_
+    #define __SAFEQUEUE_HPP_
+    #include <queue>
     #include <mutex>
+    #include <condition_variable>
 
-class ISafeQueue {
+template <typename T>
+class SafeQueue {
     public:
-        virtual ~ISafeQueue() = default;
-        virtual void push(int value) = 0;
-        virtual bool tryPop(int &value) = 0;
-};
+        SafeQueue()
+        {}
 
-class SafeQueue : public ISafeQueue {
-    public:
-        SafeQueue();
-        ~SafeQueue();
-        void push(int value);
-        bool tryPop(int &value);
+        ~SafeQueue()
+        {}
+
+        void push(T value)
+        {
+            {
+                std::lock_guard<std::mutex> lock(m_mutex);
+
+                m_queue.push(value);
+            }
+            m_cv.notify_one();
+        }
+
+        bool tryPop(T &value)
+        {
+            bool valuePopped = false;
+            std::unique_lock<std::mutex> lock(m_mutex);
+
+            if (0 < m_queue.size()) {
+                value = m_queue.front();
+                m_queue.pop();
+                valuePopped = true;
+            }
+            return valuePopped;
+        }
+
+        T pop()
+        {
+            T value = 0;
+
+            {
+                std::unique_lock<std::mutex> lock(m_mutex);
+
+                m_cv.wait(lock, [ & ] ( ) { return !this->empty(); });
+                value = m_queue.front();
+                m_queue.pop();
+            }
+            return value;
+        }
+
+        bool empty() const noexcept
+        {
+            return m_queue.empty();
+        }
+
     private:
-        std::stack<int> m_stack;
+        std::queue<T> m_queue;
         std::mutex m_mutex;
+        std::condition_variable m_cv;
 };
 
-#endif /* !__ISAFEQUEUE_HPP_ */
+#endif /* !__SAFEQUEUE_HPP_ */
