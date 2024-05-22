@@ -13,7 +13,7 @@ void ThreadPool::run()
     std::size_t i = 0;
     std::thread *threads = new std::thread[m_threadsLimit];
 
-    for (; i < m_threadsLimit && !m_queue.empty(); ++i)
+    for (; i < m_threadsLimit; ++i)
         threads[i] = std::thread([&] { this->consumer(); });
     for (i = 0; i < m_threadsLimit; ++i)
         threads[i].join();
@@ -27,12 +27,12 @@ void ThreadPool::addTask(ThreadFunction task)
 
 void ThreadPool::consumer()
 {
-    int canPop = true;
+    bool keepConsuming = true;
     ThreadFunction task;
 
-    while (!m_queue.empty() && canPop) {
-        canPop = m_queue.tryPop(task);
-        if (canPop)
+    do {
+        keepConsuming = m_queue.tryPop(task);
+        if (keepConsuming)
             task();
-    }
+    } while (keepConsuming);
 }
