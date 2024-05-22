@@ -51,9 +51,9 @@ plazza::Pizza::PizzaSize plazza::PizzaOrderParser::_parseSize(std::string &size)
 uint32_t plazza::PizzaOrderParser::_parseQuantity(const std::string &quantity)
 {
     if (quantity.at(0) != 'x')
-        throw PizzaParserException("Invalid quantity format (where is the 'x' ?): " + quantity);
+        throw PizzaParserException("Invalid quantity format - where is the 'x'?");
     if (quantity.find_first_not_of("0123456789", 1) != std::string::npos)
-        throw PizzaParserException("Invalid quantity format (not a number): " + quantity);
+        throw PizzaParserException("Invalid quantity format - not a number: " + quantity);
     try {
         return std::stoul(quantity.substr(1));
     } catch (const std::exception &e) {
@@ -85,6 +85,7 @@ std::vector<plazza::PizzaOrderParser::PizzaOrder> plazza::PizzaOrderParser::pars
         }
 
         if (orderTokens.size() != 3) {
+            // Not throwing an exception here, we want to continue processing the other orders
             std::cerr << "[PizzaOrderParser] The following order is invalid and will be ignored: " << order << " (invalid number of tokens) continuing processing..." << std::endl;
             continue;
         }
