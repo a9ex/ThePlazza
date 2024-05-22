@@ -54,7 +54,7 @@ int main(void)
     plazza::PizzaOrderParser parser(pizzas);
 
     try {
-        std::vector<plazza::PizzaOrderParser::PizzaOrder> orders = parser.parsePizzaOrder("FaNtAsIA XXL x2;   regina M x3; fantasia XL x2; fantasia XL x2; regina XXL x3");
+        std::vector<plazza::PizzaOrderParser::PizzaOrder> orders = parser.parsePizzaOrders("FaNtAsIA XXL x2;   regina M x3; fantasia XL x2; fantasia XL x2; regina XXL x3");
     } catch (const plazza::PizzaParserException &e) {
         std::cerr << e.what() << std::endl;
     }

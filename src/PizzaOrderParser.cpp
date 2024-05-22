@@ -61,7 +61,7 @@ uint32_t plazza::PizzaOrderParser::_parseQuantity(const std::string &quantity)
     }
 }
 
-std::vector<plazza::PizzaOrderParser::PizzaOrder> plazza::PizzaOrderParser::parsePizzaOrder(const std::string &line)
+std::vector<plazza::PizzaOrderParser::PizzaOrder> plazza::PizzaOrderParser::parsePizzaOrders(const std::string &line)
 {
     std::vector<PizzaOrder> orders;
     std::vector<std::string> tokens;

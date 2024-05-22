@@ -29,7 +29,7 @@ namespace plazza
              * @param line the order line
              * @return std::vector<PizzaOrder> the parsed order, ready to be sent to the kitchens
              */
-            std::vector<PizzaOrder> parsePizzaOrder(const std::string &line);
+            std::vector<PizzaOrder> parsePizzaOrders(const std::string &line);
 
         private:
             std::map<std::string, Pizza> &_pizzas;
