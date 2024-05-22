@@ -13,4 +13,7 @@ unit_tests
 plazza
 include/Mutex.hpp
 tests/TestsMutex.cpp
-include/
+
+# Bear - Clang
+.cache
+compile_commands.json
