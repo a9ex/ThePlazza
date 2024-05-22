@@ -6,6 +6,7 @@
 */
 
 #include "Pizza.hpp"
+#include <map>
 #include <string>
 #include <vector>
 
@@ -53,6 +54,13 @@ namespace plazza {
              * @return Pizza the pizza
              */
             Pizza build();
+
+            /**
+             * @brief Take an existing mapping of pizzas and append the new pizza to it
+             *
+             * @param pizzas the existing mapping of pizzas
+             */
+            PizzaBuilder &addPizzaToMap(std::map<std::string, Pizza> &pizzas);
         protected:
         private:
             Pizza _pizza;

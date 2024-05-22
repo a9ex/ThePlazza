@@ -35,28 +35,26 @@ int main(void)
     //     pool.addTask(printRandomNumber);
     // pool.run();
 
+    std::map<std::string, plazza::Pizza> pizzas;
+
     plazza::PizzaBuilder builder;
     builder.setPizzaName("regina")
     .setPizzaType(plazza::Pizza::PizzaType::Regina)
     .setCookingTime(2)
-    .setIngredients({plazza::Pizza::PizzaIngredient::Dough, plazza::Pizza::PizzaIngredient::Tomato, plazza::Pizza::PizzaIngredient::Gruyere, plazza::Pizza::PizzaIngredient::Ham, plazza::Pizza::PizzaIngredient::Mushrooms});
+    .setIngredients({plazza::Pizza::PizzaIngredient::Dough, plazza::Pizza::PizzaIngredient::Tomato, plazza::Pizza::PizzaIngredient::Gruyere, plazza::Pizza::PizzaIngredient::Ham, plazza::Pizza::PizzaIngredient::Mushrooms})
+    .addPizzaToMap(pizzas);
 
     plazza::PizzaBuilder builder2;
     builder2.setPizzaName("fantasia")
     .setPizzaType(plazza::Pizza::PizzaType::Fantasia)
     .setCookingTime(4)
-    .setIngredients({plazza::Pizza::PizzaIngredient::Dough, plazza::Pizza::PizzaIngredient::Tomato, plazza::Pizza::PizzaIngredient::Gruyere, plazza::Pizza::PizzaIngredient::Mushrooms, plazza::Pizza::PizzaIngredient::Steak, plazza::Pizza::PizzaIngredient::Eggplant, plazza::Pizza::PizzaIngredient::GoatCheese, plazza::Pizza::PizzaIngredient::ChiefLove});
-
-    plazza::Pizza pizza = builder.build();
-    plazza::Pizza pizza2 = builder2.build();
-    std::map<std::string, plazza::Pizza> pizzas;
-    pizzas["regina"] = pizza;
-    pizzas["fantasia"] = pizza2;
+    .setIngredients({plazza::Pizza::PizzaIngredient::Dough, plazza::Pizza::PizzaIngredient::Tomato, plazza::Pizza::PizzaIngredient::Gruyere, plazza::Pizza::PizzaIngredient::Mushrooms, plazza::Pizza::PizzaIngredient::Steak, plazza::Pizza::PizzaIngredient::Eggplant, plazza::Pizza::PizzaIngredient::GoatCheese, plazza::Pizza::PizzaIngredient::ChiefLove})
+    .addPizzaToMap(pizzas);
 
     plazza::PizzaOrderParser parser(pizzas);
 
     try {
-        std::vector<plazza::PizzaOrderParser::PizzaOrder> orders = parser.parsePizzaOrder("MALON DURO XXL x2; fantasia M x3a; fantasia X x2;;; fantasia XL 2; regina XXL x3");
+        std::vector<plazza::PizzaOrderParser::PizzaOrder> orders = parser.parsePizzaOrder("FaNtAsIA XXL x2;   regina M x3; fantasia XL x2; fantasia XL x2; regina XXL x3");
     } catch (const plazza::PizzaParserException &e) {
         std::cerr << e.what() << std::endl;
     }
