@@ -40,7 +40,7 @@ namespace file {
                 : std::runtime_error(message) {}
         };
     public:
-        Pipe(std::string const &path, Mode mode, bool init);
+        Pipe(std::string const &path, Mode mode);
         ~Pipe() { this->destroy(); };
 
         void destroy();
@@ -63,6 +63,8 @@ namespace file {
             buffer = this->readBuf();
             return *this;
         }
+
+        int getFd() const { return this->_fd; }
     private:
         int _fd;
         Mode _mode;

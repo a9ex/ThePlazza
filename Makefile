@@ -8,12 +8,14 @@
 NAME			:=	plazza
 CC				:=	g++
 CPPFLAGS		:=	-Iinclude/
-CXXFLAGS		:=	-Wall -Wextra -Werror -pedantic -std=c++17 -fPIE 	 \
+CXXFLAGS		:=	-Wall -Wextra -Werror -pedantic -std=c++23 -fPIE 	 \
 					-fno-delete-null-pointer-checks -fno-strict-overflow \
 					-fno-strict-aliasing -ftrivial-auto-var-init=zero    \
 					-Wformat -Wimplicit-fallthrough 					 \
 					-U_FORTIFY_SOURCE -D_GLIBCXX_ASSERTIONS 			 \
-					-fstack-protector-strong
+					-fstack-protector-strong -Wno-unused-parameter -g	 \
+					-Wno-unused-variable -Wno-unused-function \
+					-Wno-unused-but-set-variable
 
 ifeq ($(PLATFORM),x86_64)
 	CXXFLAGS	+=	-fcf-protection=full -Wl,-z,nodlopen -Wl,-z,noexecstack \
@@ -71,4 +73,6 @@ fclean:	clean
 	@$(RM) $(NAME)
 	@$(RM) unit_tests
 
-re:	fclean	all
+re:
+	$(MAKE) fclean
+	$(MAKE) all

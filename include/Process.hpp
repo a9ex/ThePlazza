@@ -17,6 +17,7 @@ namespace process {
         ~ForkProcess() = default;
 
         bool isAlive() const;
+        void wait();
 
         pid_t getPid() const { return this->_pid; }
         bool isChild() const { return this->_pid == 0; }

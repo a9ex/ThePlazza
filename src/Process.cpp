@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include "Process.hpp"
+#include <sys/wait.h>
+#include <sys/types.h>
 
 process::ForkProcess::ForkProcess(std::function<void()> child_func)
 {
@@ -16,4 +18,9 @@ process::ForkProcess::ForkProcess(std::function<void()> child_func)
         child_func();
         std::exit(0);
     }
+}
+
+void process::ForkProcess::wait()
+{
+    waitpid(this->_pid, NULL, 0);
 }
