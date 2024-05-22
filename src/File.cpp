@@ -12,15 +12,13 @@
 
 file::Pipe::Pipe(std::string const &path, Mode mode)
 {
-    mode_t m = (mode == READ ? O_RDONLY : O_WRONLY);
+    int m = (mode == READ ? O_RDONLY : O_WRONLY);
 
-    // If file doesn't exist, create it
     if (access(path.c_str(), F_OK) == -1)
-        mkfifo(path.c_str(), 0777);
-        // if (mkfifo(path.c_str(), 0777) != 0) {
-        //     perror("mkfifo");
-        //     throw CreateException("Failed to create pipe");
-        // }
+        if (mkfifo(path.c_str(), 0777) != 0) {
+            perror("mkfifo");
+            throw CreateException("Failed to create pipe");
+        }
     this->_fd = open(path.c_str(), m);
     if (this->_fd == -1) {
         perror("open");
@@ -57,8 +55,19 @@ std::vector<char> file::Pipe::readBuf()
     char buf[4096];
     int n;
 
-    while ((n = read(this->_fd, buf, 4096)) > 0) {
+    n = read(this->_fd, buf, 4096);
+    if (n == -1) {
+        perror("read");
+        throw std::runtime_error("Failed to read from pipe");
+    }
+
+    if (n < 4096)
         buffer.insert(buffer.end(), buf, buf + n);
+    else {
+        buffer.insert(buffer.end(), buf, buf + n);
+        while ((n = read(this->_fd, buf, 4096)) == 4096) {
+            buffer.insert(buffer.end(), buf, buf + n);
+        }
     }
     return buffer;
 }

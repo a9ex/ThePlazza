@@ -19,31 +19,19 @@ plazza::Kitchen::Kitchen(std::string id)
         LocalKitchen local_kitchen(this->_id);
     });
 
+    std::cout << "Creating Kitchen named '" << id << "'" << std::endl;
+
     // Create pipes
-    std::cout << "Kitchen 1" << std::endl;
-    // this->_input_pipe = std::optional(
-    //     file::Pipe(
-    //         "kitchen_pipe_" + this->_id + "_input",
-    //         file::Pipe::Mode::WRITE
-    //     )
-    // );
-    // std::cout << "Kitchen 2" << std::endl;
-    // this->_output_pipe = std::optional(
-    //     file::Pipe(
-    //         "kitchen_pipe_" + this->_id + "_output",
-    //         file::Pipe::Mode::READ
-    //     )
-    // );
+    auto ip = file::Pipe("kitchen_pipe_" + this->_id + "_input",
+        file::Pipe::Mode::WRITE);
+    this->_input_pipe = std::move(ip);
 
-    mkfifo("kitchen_pipe_1_input", 0777);
-    int fd = open("kitchen_pipe_1_input", O_WRONLY);
+    auto op = file::Pipe("kitchen_pipe_" + this->_id + "_output",
+        file::Pipe::Mode::READ);
+    this->_output_pipe = std::move(op);
 
-    //this->_input_pipe->writeBuf(std::vector<char>{'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'});
-    std::cout << "Parent fd: " << fd << std::endl;
-    write(fd, "A", 1);
-
-    // comm::PingPacket packet(69);
-    // packet >> *this->_input_pipe;
+    comm::PingPacket packet(9999);
+    packet >> *this->_input_pipe;
 
     std::cout << "Written message" << std::endl;
 
@@ -54,43 +42,16 @@ plazza::Kitchen::Kitchen(std::string id)
 plazza::LocalKitchen::LocalKitchen(std::string id)
     : _id(id)
 {
-    // std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::cout << "LocalKitchen 1" << std::endl;
-    int fd = open("kitchen_pipe_1_input", O_RDONLY);
-    // this->_input_pipe = std::optional(
-    //     file::Pipe(
-    //         "kitchen_pipe_" + this->_id + "_input",
-    //         file::Pipe::Mode::READ
-    //     )
-    // );
-    // int fd;
-    std::cout << "LocalKitchen 2" << std::endl;
-    // this->_output_pipe = std::optional(
-    //     file::Pipe(
-    //         "kitchen_pipe_" + this->_id + "_output",
-    //         file::Pipe::Mode::WRITE
-    //     )
-    // );
+    auto ip = file::Pipe("kitchen_pipe_" + this->_id + "_input",
+        file::Pipe::Mode::READ);
+    this->_input_pipe = std::move(ip);
 
-    // Read from input pipe
-    char buffer[1] = {0};
+    auto op = file::Pipe("kitchen_pipe_" + this->_id + "_output",
+        file::Pipe::Mode::WRITE);
+    this->_output_pipe = std::move(op);
 
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    comm::PingPacket pp;
+    pp << this->_input_pipe->readBuf();
 
-    ssize_t s = read(fd, buffer, 1);
-
-    std::cout << "Child fd:" << fd << std::endl;
-    perror("coucou");
-
-    std::cout << "Received message length: " << s << std::endl;
-    std::cout << "Received message: " << buffer << std::endl;
-//    while (true) {
-//         std::this_thread::sleep_for(std::chrono::seconds(1));
-//         char buffer[4096] = {0};
-
-//         std::size_t s = read(this->_input_pipe->getFd(), buffer, 4096);
-//         if (s == 0)
-//             continue;
-//         std::cout << "Received message: " << buffer << std::endl;
-//    }
+    std::cout << "Packet ID: " << pp.getI() << std::endl;
 }

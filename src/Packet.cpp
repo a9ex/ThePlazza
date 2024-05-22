@@ -25,6 +25,8 @@ comm::Packet &comm::Packet::operator>>(file::Pipe &pipe)
 
 comm::Packet &comm::Packet::operator<<(const std::vector<char> buffer)
 {
-    this->deserialize(buffer);
+    auto subbuf = std::vector<char>(buffer.begin() + 2, buffer.end());
+
+    this->deserialize(subbuf);
     return *this;
 }

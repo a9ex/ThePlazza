@@ -28,22 +28,26 @@ namespace plazza {
     class Kitchen {
     public:
         Kitchen(std::string id);
+        Kitchen(Kitchen const &) = delete;
+        Kitchen(Kitchen &&) = delete;
+        ~Kitchen() = default;
         void cookPizza(std::string pizza);
         void closeKitchen();
 
     private:
         std::string _id;
         std::optional<process::ForkProcess> _process;
-        std::optional<file::Pipe> _output_pipe;
-        std::optional<file::Pipe> _input_pipe;
+        std::optional<file::Pipe> _output_pipe = std::nullopt;
+        std::optional<file::Pipe> _input_pipe = std::nullopt;
     };
 
     class LocalKitchen {
     public:
         LocalKitchen(std::string id);
+        ~LocalKitchen() = default;
     private:
         std::string _id;
-        std::optional<file::Pipe> _input_pipe;
-        std::optional<file::Pipe> _output_pipe;
+        std::optional<file::Pipe> _input_pipe = std::nullopt;
+        std::optional<file::Pipe> _output_pipe = std::nullopt;
     };
 }
