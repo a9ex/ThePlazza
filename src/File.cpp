@@ -14,11 +14,13 @@ file::Pipe::Pipe(std::string const &path, Mode mode)
 {
     int m = (mode == READ ? O_RDONLY : O_WRONLY);
 
-    if (access(path.c_str(), F_OK) == -1)
-        if (mkfifo(path.c_str(), 0777) != 0) {
-            perror("mkfifo");
-            throw CreateException("Failed to create pipe");
-        }
+    if (mkfifo(path.c_str(), 0777) != 0) {
+        if (errno == EEXIST)
+            goto style;
+        perror("mkfifo");
+        throw CreateException("Failed to create pipe");
+    }
+style:
     this->_fd = open(path.c_str(), m);
     if (this->_fd == -1) {
         perror("open");
@@ -47,7 +49,7 @@ void file::Pipe::writeBuf(std::vector<char> buffer)
     write(this->_fd, buffer.data(), buffer.size());
 }
 
-std::vector<char> file::Pipe::readBuf()
+buffer::ByteBuf file::Pipe::readBuf()
 {
     if (this->_mode != READ)
         throw InvalidModeException("Cannot read from a write-only pipe");
@@ -69,5 +71,5 @@ std::vector<char> file::Pipe::readBuf()
             buffer.insert(buffer.end(), buf, buf + n);
         }
     }
-    return buffer;
+    return buffer::ByteBuf(buffer);
 }

@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "Buffer.hpp"
 #include <string>
 #include <vector>
 #include <unistd.h>
@@ -47,7 +48,7 @@ namespace file {
 
         void writeSingle(char c);
         void writeBuf(std::vector<char> buffer);
-        std::vector<char> readBuf();
+        buffer::ByteBuf readBuf();
 
         Pipe &operator<<(std::vector<char> buffer) {
             this->writeBuf(buffer);
@@ -59,8 +60,8 @@ namespace file {
             return *this;
         }
 
-        Pipe &operator>>(std::vector<char> &buffer) {
-            buffer = this->readBuf();
+        Pipe &operator<<(buffer::ByteBuf buffer) {
+            this->writeBuf(buffer.getBuffer());
             return *this;
         }
 

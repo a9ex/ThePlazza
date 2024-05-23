@@ -11,12 +11,12 @@
 #include <thread>
 #include <chrono>
 
-plazza::Kitchen::Kitchen(std::string id)
+plazza::Kitchen::Kitchen(plazza::Holders &holders, std::string id)
     : _id(id)
 {
     this->_id = id;
-    this->_process = process::ForkProcess([this] {
-        LocalKitchen local_kitchen(this->_id);
+    this->_process = process::ForkProcess([this, &holders] {
+        LocalKitchen local_kitchen(holders, this->_id);
     });
 
     std::cout << "Creating Kitchen named '" << id << "'" << std::endl;
@@ -30,7 +30,7 @@ plazza::Kitchen::Kitchen(std::string id)
         file::Pipe::Mode::READ);
     this->_output_pipe = std::move(op);
 
-    comm::PingPacket packet(9999);
+    comm::PingPacket packet(69);
     packet >> *this->_input_pipe;
 
     std::cout << "Written message" << std::endl;
@@ -39,7 +39,7 @@ plazza::Kitchen::Kitchen(std::string id)
     this->_process->wait();
 }
 
-plazza::LocalKitchen::LocalKitchen(std::string id)
+plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, std::string id)
     : _id(id)
 {
     auto ip = file::Pipe("kitchen_pipe_" + this->_id + "_input",
@@ -50,8 +50,9 @@ plazza::LocalKitchen::LocalKitchen(std::string id)
         file::Pipe::Mode::WRITE);
     this->_output_pipe = std::move(op);
 
-    comm::PingPacket pp;
-    pp << this->_input_pipe->readBuf();
+    std::unique_ptr<comm::Packet> packet =
+        holders.getPacketHandler().constructPacket(this->_input_pipe->readBuf());
 
-    std::cout << "Packet ID: " << pp.getI() << std::endl;
+    auto ping_packet = dynamic_cast<comm::PingPacket *>(packet.get());
+    std::cout << "Received message: " << ping_packet->getI() << std::endl;
 }
