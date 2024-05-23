@@ -10,10 +10,21 @@
 #include "File.hpp"
 #include "Process.hpp"
 #include "Managers.hpp"
+#include "Packet.hpp"
 #include <string>
 #include <optional>
 
 namespace plazza {
+    class Holders {
+    public:
+        Holders() = default;
+        ~Holders() = default;
+
+        comm::PacketHandler &getPacketHandler() { return this->_packet_handler; }
+    private:
+        comm::PacketHandler _packet_handler;
+    };
+
     class Managers {
     public:
         Managers();
@@ -27,7 +38,7 @@ namespace plazza {
 
     class Kitchen {
     public:
-        Kitchen(std::string id);
+        Kitchen(Holders &holders, std::string id);
         Kitchen(Kitchen const &) = delete;
         Kitchen(Kitchen &&) = delete;
         ~Kitchen() = default;
@@ -43,11 +54,21 @@ namespace plazza {
 
     class LocalKitchen {
     public:
-        LocalKitchen(std::string id);
+        LocalKitchen(Holders &holders, std::string id);
         ~LocalKitchen() = default;
     private:
         std::string _id;
         std::optional<file::Pipe> _input_pipe = std::nullopt;
         std::optional<file::Pipe> _output_pipe = std::nullopt;
+    };
+
+    class PlazzaContext {
+    public:
+        PlazzaContext();
+        ~PlazzaContext() = default;
+
+        comm::PacketHandler &getPacketHandler() { return this->_packet_handler; }
+    private:
+        comm::PacketHandler _packet_handler;
     };
 }

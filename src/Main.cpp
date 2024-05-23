@@ -10,26 +10,15 @@
 #include "File.hpp"
 #include "Plazza.hpp"
 #include "ThreadPool.hpp"
+#include "Packet.hpp"
 
 #ifndef CRITERION
 
 int main(void)
 {
-    std::size_t i = 0;
-    ThreadPool pool(2);
+    plazza::Holders holders;
+    plazza::Kitchen kitchen(holders, "1");
 
-    pool.run();
-    for (; i < 1000; ++i)
-        pool.addTask([i, &pool] {
-            std::cout << "Task " << i << " started" << std::endl;
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-            std::cout << "Task " << i << " done !" << std::endl;
-            pool.addTask([] {
-                std::cout << "Hello, World !" << std::endl;
-            });
-        });
-    std::this_thread::sleep_for(std::chrono::seconds(5));
-    pool.close(true);
     return 0;
 }
 
