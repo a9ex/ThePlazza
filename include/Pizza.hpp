@@ -36,7 +36,7 @@ namespace plazza {
      *
      */
     enum PizzaIngredient {
-        Dough = 1,
+        Dough = 0,
         Tomato,
         Gruyere,
         Ham,
@@ -44,7 +44,8 @@ namespace plazza {
         Steak,
         Eggplant,
         GoatCheese,
-        ChiefLove
+        ChiefLove,
+        IngredientCount
     };
 
     // Represents a pizza
