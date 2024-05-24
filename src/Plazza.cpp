@@ -103,3 +103,28 @@ void plazza::LocalKitchen::onPacketReceived(comm::Packet &packet)
 {
     std::cout << "LocalKitchen received packet" << std::endl;
 }
+
+std::shared_ptr<plazza::Kitchen> plazza::PizzaBalancer::balancePizza(plazza::Pizza &pizza,
+    std::vector<std::shared_ptr<plazza::Kitchen>> kitchens)
+{
+    std::shared_ptr<plazza::Kitchen> kitchen{nullptr};
+
+    // Remove kitchens that are not available
+    kitchens.erase(std::remove_if(kitchens.begin(), kitchens.end(), [](std::shared_ptr<plazza::Kitchen> &kitchen) {
+        return kitchen->getSpec().getOvens() == 0;
+    }), kitchens.end());
+
+    // Sort by kitchen with the minimum amount of ovens
+    std::sort(kitchens.begin(), kitchens.end(), [](std::shared_ptr<plazza::Kitchen> &a, std::shared_ptr<plazza::Kitchen> &b) {
+        return a->getSpec().getOvens() < b->getSpec().getOvens();
+    });
+
+    // TODO: Malo: Sort (not remove) by kitchen with number of ingredients
+    // Design idea: Count the number of matching ingredients available in the kitchen and sort it from most to least
+
+    // Get the first kitchen
+    if (!kitchens.empty())
+        kitchen = kitchens.front();
+    
+    return kitchen;
+}

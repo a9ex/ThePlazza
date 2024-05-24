@@ -12,6 +12,7 @@
 #include "Managers.hpp"
 #include "Packet.hpp"
 #include "ThreadPool.hpp"
+#include "Pizza.hpp"
 #include <string>
 #include <optional>
 #include <memory>
@@ -66,6 +67,8 @@ namespace plazza {
 
         std::string getId() { return this->_id; }
         int getOvens() { return this->ovens; }
+        void increaseOvens() { this->ovens++; }
+        void decreaseOvens() { this->ovens--; }
     protected:
         std::string _id;
         int ovens;
@@ -85,6 +88,7 @@ namespace plazza {
             return *this;
         }
 
+        KitchenSpec getSpec() { return this->_spec; }
     private:
         KitchenSpec _spec;
         std::unique_ptr<process::ForkProcess> _process = std::unique_ptr<process::ForkProcess>(nullptr);
@@ -128,7 +132,9 @@ namespace plazza {
             comm::Packet &packet);
     };
 
-    class KitchenBalancer {
-
+    class PizzaBalancer {
+    public:
+        std::shared_ptr<plazza::Kitchen> balancePizza(plazza::Pizza &pizza,
+            std::vector<std::shared_ptr<Kitchen>> kitchens);
     };
 }
