@@ -19,7 +19,8 @@ namespace plazza {
         Regina = 1,
         Margarita = 2,
         Americana = 4,
-        Fantasia = 8
+        Fantasia = 8,
+        TYPE_ITER_END,
     };
 
     /**
@@ -31,7 +32,8 @@ namespace plazza {
         M = 2,
         L = 4,
         XL = 8,
-        XXL = 16
+        XXL = 16,
+        SIZE_ITER_END,
     };
 
     /**
@@ -47,7 +49,8 @@ namespace plazza {
         Steak,
         Eggplant,
         GoatCheese,
-        ChiefLove
+        ChiefLove,
+        INGREDIENT_ITER_END,
     };
 
     // Represents a pizza

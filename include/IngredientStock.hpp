@@ -13,7 +13,16 @@
 template <size_t I>
 class IngredientStock {
     public:
-        IngredientStock() = default;
+        IngredientStock() : m_semaphore(I), m_ingredients(static_cast<size_t>(plazza::PizzaIngredient::INGREDIENT_ITER_END), 0) {}
+        ~IngredientStock() = default;
+
+        IngredientStock(const IngredientStock &other) : m_semaphore(I), m_ingredients(other.m_ingredients) {}
+        IngredientStock& operator=(const IngredientStock&) {
+            m_semaphore = I;
+            m_ingredients = std::vector<std::size_t>(static_cast<size_t>(plazza::PizzaIngredient::INGREDIENT_ITER_END), 0);
+            return *this;
+        }
+
         std::size_t getIngredient(plazza::PizzaIngredient ingredient)
         {
             std::size_t value = 0;
@@ -21,6 +30,7 @@ class IngredientStock {
             m_semaphore.acquire();
             value = m_ingredients[ingredient];
             m_semaphore.release();
+            return value;
         }
 
         void refillAll()
