@@ -5,8 +5,11 @@
 ** Pizza.hpp
 */
 
+#pragma once
+
 #include <string>
 #include <vector>
+
 namespace plazza {
     /**
      * @brief Represents the type of a pizza (do not modify the values)
