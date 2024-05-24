@@ -12,6 +12,7 @@
 #include "Managers.hpp"
 #include "Packet.hpp"
 #include "ThreadPool.hpp"
+#include "IngredientStock.hpp"
 #include "Pizza.hpp"
 #include <string>
 #include <optional>
@@ -69,9 +70,11 @@ namespace plazza {
         int getOvens() { return this->ovens; }
         void increaseOvens() { this->ovens++; }
         void decreaseOvens() { this->ovens--; }
+        IngredientStock<1> &getStock() { return this->_stock; }
     protected:
         std::string _id;
         int ovens;
+        IngredientStock<1> _stock;
     };
 
     class Kitchen {
@@ -88,7 +91,7 @@ namespace plazza {
             return *this;
         }
 
-        KitchenSpec getSpec() { return this->_spec; }
+        KitchenSpec &getSpec() { return this->_spec; }
     private:
         KitchenSpec _spec;
         std::unique_ptr<process::ForkProcess> _process = std::unique_ptr<process::ForkProcess>(nullptr);

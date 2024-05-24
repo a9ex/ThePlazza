@@ -60,9 +60,15 @@ plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec
     );
 
     // Init thread pool
+    size_t thread_count = this->_spec.getOvens();
+
     // We need to add 1 thread for the reception dispatcher
-    std::size_t thread_count = this->_spec.getOvens() + 1;
-    this->_thread_pool = std::make_unique<ThreadPool>(this->_spec.getOvens() + 1);
+    thread_count++;
+
+    // And another thread for the stock refill
+    thread_count++;
+
+    this->_thread_pool = std::make_unique<ThreadPool>(thread_count);
     this->_thread_pool->run();
 
     this->_thread_pool->addTask([this] {
@@ -76,11 +82,14 @@ plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec
         }
     });
 
-    comm::PingPacket packet(420);
-    packet >> *this->_output_pipe;
-
-    comm::PingPacket p2(420);
-    p2 >> *this->_output_pipe;
+    this->_thread_pool->addTask([this] {
+        while (true) {
+            std::this_thread::sleep_for(std::chrono::seconds(5));
+            this->_spec.getStock().refillAll();
+            comm::KitchenRefillPacket() >> *this->_output_pipe;
+            std::cout << "Refill sent" << std::endl;
+        }
+    });
 
     // Wait 1s
     std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -92,11 +101,13 @@ plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec
 
 void plazza::PacketReceiver::onReceive(plazza::Holders &holders,
     plazza::Kitchen &kitchen,
-    comm::Packet &packet)
+    comm::Packet &p)
 {
-    std::cout << "RECEPTION Packet received" << std::endl;
-    comm::PingPacket ping_packet(6969);
-    kitchen << ping_packet;
+   // If packet is subtype of PingPacket
+   if (comm::Packet::Type::KITCHEN_REFILL == p.getType()) {
+        comm::KitchenRefillPacket packet = dynamic_cast<comm::KitchenRefillPacket &>(p);
+        kitchen.getSpec().getStock().refillAll();
+   }
 }
 
 void plazza::LocalKitchen::onPacketReceived(comm::Packet &packet)

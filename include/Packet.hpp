@@ -21,6 +21,7 @@ namespace comm {
     public:
         enum Type {
             PING = 0x01,
+            KITCHEN_REFILL,
         };
     public:
         Packet(Type type) : _type(type) {}
@@ -59,6 +60,21 @@ namespace comm {
         int _i;
     };
 
+    class KitchenRefillPacket : public Packet {
+    public:
+        KitchenRefillPacket() : Packet(KITCHEN_REFILL) {}
+        ~KitchenRefillPacket() = default;
+
+        buffer::ByteBuf serialize() const override {
+            buffer::ByteBuf buffer;
+
+            return buffer;
+        }
+
+        void deserialize(buffer::ByteBuf buff) override {
+        }
+    };
+
     class PacketHandler {
     public:
         PacketHandler() = default;
@@ -79,6 +95,8 @@ namespace comm {
                     auto packet = this->_packet_constructors[type]();
                     *packet << buff;
                     packets.push_back(std::move(packet));
+                } else {
+                    std::cout << "Unknown packet type" << std::endl;
                 }
             }
             return packets;
@@ -86,6 +104,7 @@ namespace comm {
     private:
         std::map<Packet::Type, std::function<std::shared_ptr<Packet>()>> _packet_constructors = {
             {Packet::PING, []() { return std::make_shared<PingPacket>(); }},
+            {Packet::KITCHEN_REFILL, []() { return std::make_shared<KitchenRefillPacket>(); }},
         };
     };
 };
