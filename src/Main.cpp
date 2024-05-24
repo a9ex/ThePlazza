@@ -19,7 +19,7 @@
 int main(void)
 {
     plazza::Holders holders;
-    plazza::Kitchen kitchen(holders, plazza::KitchenSpec("1"));
+    plazza::Kitchen kitchen(holders, plazza::KitchenSpec("1", 3));
 
     auto &runnabled_queue = holders.getMainThreadRunnables();
     while (true) {

@@ -30,29 +30,25 @@ plazza::Kitchen::Kitchen(plazza::Holders &holders, plazza::KitchenSpec spec)
         file::Pipe::Mode::READ
     );
 
-    // Create packet receiver thread
-
-    bool exit_thread = false;
-    auto thread = std::thread([this, &holders, &exit_thread] {
-        while (!exit_thread) {
+    auto thread = std::thread([this, &holders] {
+        while (true) {
             std::vector<std::shared_ptr<comm::Packet>> packets = holders.getPacketHandler().constructPackets(this->_output_pipe->readBuf());
             if (!packets.empty()) {
-                holders.addMainRunnable([packets, &holders] {
-                    std::cout << "HEYY" << std::endl;
+                holders.addMainRunnable([this, packets, &holders] { // Capture 'this' in the lambda capture list
                     for (auto &packet : packets)
-                        holders.getReceptionDispatcher().onPacketReceived(*packet);
+                        PacketReceiver().onReceive(holders, *this, *packet);
                 });
             }
         }
     });
 
     thread.detach();
-    exit_thread = true;
 }
 
 plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec spec)
     : _spec(spec)
 {
+    // Init pipes
     this->_input_pipe = std::make_unique<file::Pipe>(
         "kitchen_pipe_" + this->_spec.getId() + "_input",
         file::Pipe::Mode::READ
@@ -63,11 +59,22 @@ plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec
         file::Pipe::Mode::WRITE
     );
 
-    // std::unique_ptr<comm::Packet> packet =
-    //     holders.getPacketHandler().constructPacket(this->_input_pipe->readBuf());
+    // Init thread pool
+    // We need to add 1 thread for the reception dispatcher
+    std::size_t thread_count = this->_spec.getOvens() + 1;
+    this->_thread_pool = std::make_unique<ThreadPool>(this->_spec.getOvens() + 1);
+    this->_thread_pool->run();
 
-    // auto ping_packet = dynamic_cast<comm::PingPacket *>(packet.get());
-    // std::cout << "Received message: " << ping_packet->getI() << std::endl;
+    this->_thread_pool->addTask([this] {
+        comm::PacketHandler packet_handler;
+        while (true) {
+            std::vector<std::shared_ptr<comm::Packet>> packets = packet_handler.constructPackets(this->_input_pipe->readBuf());
+            if (!packets.empty()) {
+                for (auto &packet : packets)
+                    this->onPacketReceived(*packet);
+            }
+        }
+    });
 
     comm::PingPacket packet(420);
     packet >> *this->_output_pipe;
@@ -78,10 +85,21 @@ plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec
     // Wait 1s
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
+    this->_thread_pool->close(false);
+
     std::cout << "Fork finished" << std::endl;
 }
 
-void plazza::ReceptionDispatcher::onPacketReceived(comm::Packet &packet)
+void plazza::PacketReceiver::onReceive(plazza::Holders &holders,
+    plazza::Kitchen &kitchen,
+    comm::Packet &packet)
 {
-    std::cout << "Received packet" << std::endl;
+    std::cout << "RECEPTION Packet received" << std::endl;
+    comm::PingPacket ping_packet(6969);
+    kitchen << ping_packet;
+}
+
+void plazza::LocalKitchen::onPacketReceived(comm::Packet &packet)
+{
+    std::cout << "LocalKitchen received packet" << std::endl;
 }
