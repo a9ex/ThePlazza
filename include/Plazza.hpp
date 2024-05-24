@@ -13,16 +13,42 @@
 #include "Packet.hpp"
 #include <string>
 #include <optional>
+#include <memory>
+#include <functional>
+#include <deque>
+#include <thread>
+#include <semaphore>
 
 namespace plazza {
+    class ReceptionDispatcher {
+    public:
+        ReceptionDispatcher() = default;
+        ~ReceptionDispatcher() = default;
+
+        void onPacketReceived(comm::Packet &packet);
+    };
+
     class Holders {
     public:
         Holders() = default;
         ~Holders() = default;
 
         comm::PacketHandler &getPacketHandler() { return this->_packet_handler; }
+        ReceptionDispatcher &getReceptionDispatcher() { return this->_reception_dispatcher; }
+
+        std::deque<std::function<void(void)>> &getMainThreadRunnables() { return this->_main_thread_runnables; }
+        void addMainRunnable(std::function<void(void)> runnable) {
+            this->_runnables_sem.acquire();
+            this->_main_thread_runnables.push_back(runnable);
+            this->_runnables_sem.release();
+        }
+        std::binary_semaphore &getRunnablesSem() { return this->_runnables_sem; }
+
     private:
         comm::PacketHandler _packet_handler;
+        ReceptionDispatcher _reception_dispatcher;
+        std::binary_semaphore _runnables_sem = std::binary_semaphore(1);
+        std::deque<std::function<void(void)>> _main_thread_runnables;
     };
 
     class Managers {
@@ -47,9 +73,10 @@ namespace plazza {
 
     private:
         std::string _id;
-        std::optional<process::ForkProcess> _process;
-        std::optional<file::Pipe> _output_pipe = std::nullopt;
-        std::optional<file::Pipe> _input_pipe = std::nullopt;
+        std::unique_ptr<process::ForkProcess> _process = std::unique_ptr<process::ForkProcess>(nullptr);
+        std::unique_ptr<file::Pipe> _output_pipe = std::unique_ptr<file::Pipe>(nullptr);
+        std::unique_ptr<file::Pipe> _input_pipe = std::unique_ptr<file::Pipe>(nullptr);
+        std::thread _thread;
     };
 
     class LocalKitchen {
@@ -58,8 +85,8 @@ namespace plazza {
         ~LocalKitchen() = default;
     private:
         std::string _id;
-        std::optional<file::Pipe> _input_pipe = std::nullopt;
-        std::optional<file::Pipe> _output_pipe = std::nullopt;
+        std::unique_ptr<file::Pipe> _input_pipe = std::unique_ptr<file::Pipe>(nullptr);
+        std::unique_ptr<file::Pipe> _output_pipe = std::unique_ptr<file::Pipe>(nullptr);
     };
 
     class PlazzaContext {
@@ -70,5 +97,9 @@ namespace plazza {
         comm::PacketHandler &getPacketHandler() { return this->_packet_handler; }
     private:
         comm::PacketHandler _packet_handler;
+    };
+
+    class KitchenDispatcher {
+
     };
 }
