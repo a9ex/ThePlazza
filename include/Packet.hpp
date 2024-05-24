@@ -20,7 +20,7 @@ namespace comm {
     class Packet {
     public:
         enum Type {
-            PING = 0x00,
+            PING = 0x01,
         };
     public:
         Packet(Type type) : _type(type) {}
@@ -64,23 +64,28 @@ namespace comm {
         PacketHandler() = default;
         ~PacketHandler() = default;
 
-        std::unique_ptr<Packet> constructPacket(Packet::Type type) {
+        std::shared_ptr<Packet> constructPacket(Packet::Type type) {
             return this->_packet_constructors[type]();
         }
 
-        std::unique_ptr<Packet> constructPacket(buffer::ByteBuf buff) {
-            Packet::Type type = (Packet::Type) buff.readInt();
+        std::vector<std::shared_ptr<Packet>> constructPackets(buffer::ByteBuf buff) {
+            std::vector<std::shared_ptr<Packet>> packets;
 
-            if (this->_packet_constructors.find(type) != this->_packet_constructors.end()) {
-                auto packet = this->_packet_constructors[type]();
-                *packet << buff;
-                return packet;
+            while (buff.size() >= 4) {
+
+                Packet::Type type = (Packet::Type) buff.readInt();
+
+                if (this->_packet_constructors.find(type) != this->_packet_constructors.end()) {
+                    auto packet = this->_packet_constructors[type]();
+                    *packet << buff;
+                    packets.push_back(std::move(packet));
+                }
             }
-            return NULL;
+            return packets;
         }
     private:
-        std::map<Packet::Type, std::function<std::unique_ptr<Packet>()>> _packet_constructors = {
-            {Packet::PING, []() { return std::make_unique<PingPacket>(); }},
+        std::map<Packet::Type, std::function<std::shared_ptr<Packet>()>> _packet_constructors = {
+            {Packet::PING, []() { return std::make_shared<PingPacket>(); }},
         };
     };
 };
