@@ -11,23 +11,22 @@
 #include <thread>
 #include <chrono>
 
-plazza::Kitchen::Kitchen(plazza::Holders &holders, std::string id)
-    : _id(id)
+plazza::Kitchen::Kitchen(plazza::Holders &holders, plazza::KitchenSpec spec)
+    : _spec(spec)
 {
-    this->_id = id;
     this->_process = std::make_unique<process::ForkProcess>([this, &holders] {
-        LocalKitchen local_kitchen(holders, this->_id);
+        LocalKitchen local_kitchen(holders, this->_spec);
     });
 
-    std::cout << "Creating Kitchen named '" << id << "'" << std::endl;
+    std::cout << "Creating Kitchen named '" << this->_spec.getId() << "'" << std::endl;
 
     // Create pipes
     this->_input_pipe = std::make_unique<file::Pipe>(
-        "kitchen_pipe_" + this->_id + "_input",
+        "kitchen_pipe_" + this->_spec.getId() + "_input",
         file::Pipe::Mode::WRITE);
 
     this->_output_pipe = std::make_unique<file::Pipe>(
-        "kitchen_pipe_" + this->_id + "_output",
+        "kitchen_pipe_" + this->_spec.getId() + "_output",
         file::Pipe::Mode::READ
     );
 
@@ -51,16 +50,16 @@ plazza::Kitchen::Kitchen(plazza::Holders &holders, std::string id)
     exit_thread = true;
 }
 
-plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, std::string id)
-    : _id(id)
+plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec spec)
+    : _spec(spec)
 {
     this->_input_pipe = std::make_unique<file::Pipe>(
-        "kitchen_pipe_" + this->_id + "_input",
+        "kitchen_pipe_" + this->_spec.getId() + "_input",
         file::Pipe::Mode::READ
     );
 
     this->_output_pipe = std::make_unique<file::Pipe>(
-        "kitchen_pipe_" + this->_id + "_output",
+        "kitchen_pipe_" + this->_spec.getId() + "_output",
         file::Pipe::Mode::WRITE
     );
 

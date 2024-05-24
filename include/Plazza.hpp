@@ -62,9 +62,19 @@ namespace plazza {
         plazza::ThreadManager _thread_manager;
     };
 
+    class KitchenSpec {
+    public:
+        KitchenSpec(std::string id) : _id(id) {}
+        ~KitchenSpec() = default;
+
+        std::string getId() { return this->_id; }
+    protected:
+        std::string _id;
+    };
+
     class Kitchen {
     public:
-        Kitchen(Holders &holders, std::string id);
+        Kitchen(Holders &holders, KitchenSpec spec);
         Kitchen(Kitchen const &) = delete;
         Kitchen(Kitchen &&) = delete;
         ~Kitchen() = default;
@@ -72,7 +82,7 @@ namespace plazza {
         void closeKitchen();
 
     private:
-        std::string _id;
+        KitchenSpec _spec;
         std::unique_ptr<process::ForkProcess> _process = std::unique_ptr<process::ForkProcess>(nullptr);
         std::unique_ptr<file::Pipe> _output_pipe = std::unique_ptr<file::Pipe>(nullptr);
         std::unique_ptr<file::Pipe> _input_pipe = std::unique_ptr<file::Pipe>(nullptr);
@@ -81,10 +91,10 @@ namespace plazza {
 
     class LocalKitchen {
     public:
-        LocalKitchen(Holders &holders, std::string id);
+        LocalKitchen(Holders &holders, KitchenSpec spec);
         ~LocalKitchen() = default;
     private:
-        std::string _id;
+        KitchenSpec _spec;
         std::unique_ptr<file::Pipe> _input_pipe = std::unique_ptr<file::Pipe>(nullptr);
         std::unique_ptr<file::Pipe> _output_pipe = std::unique_ptr<file::Pipe>(nullptr);
     };
@@ -99,7 +109,7 @@ namespace plazza {
         comm::PacketHandler _packet_handler;
     };
 
-    class KitchenDispatcher {
+    class KitchenBalancer {
 
     };
 }
