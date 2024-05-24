@@ -98,6 +98,11 @@ namespace plazza {
         LocalKitchen(Holders &holders, KitchenSpec spec);
         ~LocalKitchen() = default;
 
+        LocalKitchen &operator<<(comm::Packet &packet) {
+            packet >> *this->_output_pipe;
+            return *this;
+        }
+
         void onPacketReceived(comm::Packet &packet);
     private:
         KitchenSpec _spec;
