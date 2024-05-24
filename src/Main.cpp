@@ -11,6 +11,7 @@
 #include "Plazza.hpp"
 #include "ThreadPool.hpp"
 #include "Packet.hpp"
+#include "Pizza.hpp"
 #include <thread>
 #include <chrono>
 
@@ -19,7 +20,13 @@
 int main(void)
 {
     plazza::Holders holders;
-    plazza::Kitchen kitchen(holders, plazza::KitchenSpec("1", 3));
+
+    int numberOfKitchens = 1;
+    std::vector<std::shared_ptr<plazza::Kitchen>> kitchens;
+    for (int i = 0; i < numberOfKitchens; i++) {
+        plazza::KitchenSpec spec(std::to_string(i), 3);
+        kitchens.push_back(std::make_shared<plazza::Kitchen>(holders, spec));
+    }
 
     auto &runnabled_queue = holders.getMainThreadRunnables();
     while (true) {

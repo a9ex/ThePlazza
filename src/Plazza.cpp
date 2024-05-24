@@ -125,6 +125,6 @@ std::shared_ptr<plazza::Kitchen> plazza::PizzaBalancer::balancePizza(plazza::Piz
     // Get the first kitchen
     if (!kitchens.empty())
         kitchen = kitchens.front();
-    
+
     return kitchen;
 }
