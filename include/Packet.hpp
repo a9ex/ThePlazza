@@ -16,6 +16,7 @@
 #include <map>
 #include <memory>
 #include <iostream>
+#include <syncstream>
 
 namespace comm {
     class Packet {
@@ -91,6 +92,7 @@ namespace comm {
             buffer.writeLong(this->_pizza.getType());
             buffer.writeDouble(this->_pizza.getCookingTime());
             buffer.writeString(this->_pizza.getName());
+            buffer.writeInt(this->_pizza.getSize());
             buffer.writeUnsignedLong(this->_pizza.getIngredients().size());
             for (auto &ingredient : this->_pizza.getIngredients()) {
                 buffer.writeInt(ingredient);
@@ -104,6 +106,7 @@ namespace comm {
             this->_pizza.setType((plazza::PizzaType) buff.readLong());
             this->_pizza.setCookingTime(buff.readDouble());
             this->_pizza.setName(buff.readString());
+            this->_pizza.setSize((plazza::PizzaSize) buff.readInt());
             std::size_t ingredients_size = buff.readUnsignedLong();
             std::vector<plazza::PizzaIngredient> ingredients;
             for (std::size_t i = 0; i < ingredients_size; i++) {
@@ -165,7 +168,7 @@ namespace comm {
                     *packet << buff;
                     packets.push_back(std::move(packet));
                 } else {
-                    std::cout << "Unknown packet type '" << type << "'" << std::endl;
+                    std::osyncstream(std::cout) << "Unknown packet type '" << type << "'" << std::endl;
                 }
             }
             return packets;
