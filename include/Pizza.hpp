@@ -13,51 +13,53 @@
 #pragma once
 
 namespace plazza {
+        /**
+     * @brief Represents the type of a pizza (do not modify the values)
+     * Required by the subject
+     */
+    enum PizzaType {
+        Regina = 1,
+        Margarita = 2,
+        Americana = 4,
+        Fantasia = 8,
+        TYPE_ITER_END,
+    };
+
+    /**
+     * @brief Represents the size of a pizza (do not modify the values)
+     *
+     */
+    enum PizzaSize {
+        S = 1,
+        M = 2,
+        L = 4,
+        XL = 8,
+        XXL = 16,
+        SIZE_ITER_END,
+    };
+
+    /**
+     * @brief Represents the ingredients of a pizza
+     *
+     */
+    enum PizzaIngredient {
+        Dough = 0,
+        Tomato,
+        Gruyere,
+        Ham,
+        Mushrooms,
+        Steak,
+        Eggplant,
+        GoatCheese,
+        ChiefLove,
+        INGREDIENT_ITER_END,
+    };
+
     // Represents a pizza
     class Pizza {
         public:
             Pizza() = default;
             ~Pizza() = default;
-
-            /**
-            * @brief Represents the type of a pizza (do not modify the values)
-            * Required by the subject
-            */
-            enum PizzaType {
-                Regina = 1,
-                Margarita = 2,
-                Americana = 4,
-                Fantasia = 8
-            };
-
-            /**
-            * @brief Represents the size of a pizza (do not modify the values)
-            *
-            */
-            enum PizzaSize {
-                S = 1,
-                M = 2,
-                L = 4,
-                XL = 8,
-                XXL = 16
-            };
-
-            /**
-            * @brief Represents the ingredients of a pizza
-            *
-            */
-            enum PizzaIngredient {
-                Dough = 0,
-                Tomato,
-                Gruyere,
-                Ham,
-                Mushrooms,
-                Steak,
-                Eggplant,
-                GoatCheese,
-                ChiefLove,
-                IngeredientsCount
-            };
 
             /**
              * @brief Get the cooking time of the pizza
@@ -107,7 +109,7 @@ namespace plazza {
              *
              * @param ingredients a vector of ingredients
              */
-            void setIngredients(const std::vector<Pizza::PizzaIngredient> &ingredients);
+            void setIngredients(const std::vector<PizzaIngredient> &ingredients);
         protected:
         private:
             double _cookingTime;
