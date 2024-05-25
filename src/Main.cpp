@@ -13,6 +13,7 @@
 #include "Packet.hpp"
 #include "Pizza.hpp"
 #include "PizzaBuilder.hpp"
+#include "Input.hpp"
 #include <thread>
 #include <chrono>
 
@@ -49,36 +50,6 @@ void addRestaurantPizzas(std::map<std::string, plazza::Pizza> &pizzas)
     .addPizzaToMap(pizzas);
 }
 
-void handleInput(plazza::Holders &holders, std::map<std::string, plazza::Pizza> &pizzas, std::vector<std::shared_ptr<plazza::Kitchen>> &kitchens)
-{
-    std::string input;
-    while (true) {
-        std::getline(std::cin, input);
-        if (input == "exit") {
-            std::cout << "Thanks for coming at our Pappa's Pizzeria ! Babaye !" << std::endl;
-            exit(0);
-        }
-
-        auto pizza = pizzas.find(input);
-        if (pizza == pizzas.end()) {
-            std::cout << "Pizza not found!" << std::endl;
-            continue;
-        }
-
-        plazza::PizzaBalancer balancer;
-        auto chosenKitchen = balancer.balancePizza(pizza->second, kitchens);
-
-        if (!chosenKitchen) {
-            std::cout << "No kitchen available! Creating a new one" << std::endl;
-            plazza::KitchenSpec spec(std::to_string(kitchens.size()), 3);
-            kitchens.push_back(std::make_shared<plazza::Kitchen>(holders, spec));
-            chosenKitchen = kitchens.back();
-        }
-
-        *chosenKitchen << pizza->second;
-    }
-}
-
 int main(void)
 {
     plazza::Holders holders;
@@ -94,31 +65,20 @@ int main(void)
 
     addRestaurantPizzas(pizzas);
 
-    // create thread to getline
+    std::mutex mutex;
 
-
-    for (int i = 0; i < 6; i++) {
-        plazza::PizzaBalancer balancer;
-        auto chosenKitchen = balancer.balancePizza(pizza, kitchens);
-
-        if (!chosenKitchen) {
-            std::cout << "No kitchen available! Creating a new one" << std::endl;
-            plazza::KitchenSpec spec(std::to_string(kitchens.size()), ovensPerKitchen);
-            kitchens.push_back(std::make_shared<plazza::Kitchen>(holders, spec));
-            chosenKitchen = kitchens.back();
-        }
-
-        *chosenKitchen << pizza;
-    }
+    std::thread userInputThread(plazza::Input::handleUserInput, std::ref(holders), std::ref(pizzas), std::ref(kitchens), std::ref(mutex));
 
     auto &runnabled_queue = holders.getMainThreadRunnables();
     while (true) {
+        mutex.lock();
         holders.getRunnablesSem().acquire();
         while (runnabled_queue.size() > 0) {
             runnabled_queue.front()();
             runnabled_queue.pop_front();
         }
         holders.getRunnablesSem().release();
+        mutex.unlock();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
