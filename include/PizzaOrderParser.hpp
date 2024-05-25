@@ -17,8 +17,8 @@ namespace plazza
             ~PizzaOrderParser() = default;
 
             struct PizzaOrder {
-                Pizza::PizzaType type;
-                Pizza::PizzaSize size;
+                PizzaType type;
+                PizzaSize size;
             };
 
             /**
@@ -33,12 +33,12 @@ namespace plazza
 
         private:
             std::map<std::string, Pizza> &_pizzas;
-            std::map<std::string, Pizza::PizzaSize> _sizes = {
-                {"S", Pizza::PizzaSize::S},
-                {"M", Pizza::PizzaSize::M},
-                {"L", Pizza::PizzaSize::L},
-                {"XL", Pizza::PizzaSize::XL},
-                {"XXL", Pizza::PizzaSize::XXL}
+            std::map<std::string, PizzaSize> _sizes = {
+                {"S", PizzaSize::S},
+                {"M", PizzaSize::M},
+                {"L", PizzaSize::L},
+                {"XL", PizzaSize::XL},
+                {"XXL", PizzaSize::XXL}
             };
 
             /**
@@ -48,7 +48,7 @@ namespace plazza
              * @return Pizza::PizzaType The type of the pizza
              * @throw PizzaParserException if the type is invalid
              */
-            Pizza::PizzaType _parseType(std::string &type);
+            PizzaType _parseType(std::string &type);
             /**
              * @brief Parse the size of a pizza
              *
@@ -56,7 +56,7 @@ namespace plazza
              * @return Pizza::PizzaSize The size of the pizza
              * @throw PizzaParserException if the size is invalid
              */
-            Pizza::PizzaSize _parseSize(std::string &size);
+            PizzaSize _parseSize(std::string &size);
             /**
              * @brief Parse the quantity of a pizza
              *

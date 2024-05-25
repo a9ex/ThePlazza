@@ -28,7 +28,7 @@ std::string trim(const std::string &str)
     return str.substr(first, (last - first + 1));
 }
 
-plazza::Pizza::PizzaType plazza::PizzaOrderParser::_parseType(std::string &type)
+plazza::PizzaType plazza::PizzaOrderParser::_parseType(std::string &type)
 {
     std::transform(type.begin(), type.end(), type.begin(), ::tolower);
     if (_pizzas.find(type) == _pizzas.end()) {
@@ -38,7 +38,7 @@ plazza::Pizza::PizzaType plazza::PizzaOrderParser::_parseType(std::string &type)
     return _pizzas[type].getType();
 }
 
-plazza::Pizza::PizzaSize plazza::PizzaOrderParser::_parseSize(std::string &size)
+plazza::PizzaSize plazza::PizzaOrderParser::_parseSize(std::string &size)
 {
     std::transform(size.begin(), size.end(), size.begin(), ::toupper);
     if (_sizes.find(size) == _sizes.end()) {

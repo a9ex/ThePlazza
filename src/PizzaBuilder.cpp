@@ -8,7 +8,7 @@
 #include <iostream>
 #include "PizzaBuilder.hpp"
 
-plazza::PizzaBuilder &plazza::PizzaBuilder::setPizzaType(Pizza::PizzaType type)
+plazza::PizzaBuilder &plazza::PizzaBuilder::setPizzaType(PizzaType type)
 {
     std::cout << "[PizzaBuilder] Creating pizza of type " << type << std::endl;
     _pizza.setType(type);
@@ -29,7 +29,7 @@ plazza::PizzaBuilder &plazza::PizzaBuilder::setCookingTime(double time)
     return *this;
 }
 
-plazza::PizzaBuilder &plazza::PizzaBuilder::setIngredients(const std::vector<Pizza::PizzaIngredient> &ingredients)
+plazza::PizzaBuilder &plazza::PizzaBuilder::setIngredients(const std::vector<PizzaIngredient> &ingredients)
 {
     std::cout << "[PizzaBuilder] Mamamia ! Aggiungere i seguenti ingredienti alla mia super pizza" << std::endl;
 
