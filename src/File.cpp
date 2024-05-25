@@ -32,7 +32,6 @@ style:
 
 void file::Pipe::destroy()
 {
-    std::cout << "Destroy of fd " << this->_fd << " with mode " << this->_mode << std::endl;
     close(this->_fd);
     this->_fd = -1;
 }

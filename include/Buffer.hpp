@@ -55,6 +55,21 @@ namespace buffer {
             return value;
         }
 
+        std::string readString() {
+            std::string value;
+            std::size_t size = this->readInt();
+            for (std::size_t i = 0; i < size; i++)
+                value.push_back(this->readChar());
+            return value;
+        }
+
+        unsigned long readUnsignedLong() {
+            unsigned long value;
+            std::memcpy(&value, this->_buffer.data(), sizeof(unsigned long));
+            this->_buffer.erase(this->_buffer.begin(), this->_buffer.begin() + sizeof(unsigned long));
+            return value;
+        }
+
         void writeChar(char c) {
             this->_buffer.push_back(c);
         }
@@ -90,6 +105,18 @@ namespace buffer {
 
         void writeBuffer(ByteBuf buffer) {
             this->writeBuffer(buffer.getBuffer());
+        }
+
+        void writeString(std::string str) {
+            this->writeInt(str.size());
+            for (auto &c : str)
+                this->writeChar(c);
+        }
+
+        void writeUnsignedLong(unsigned long l) {
+            std::vector<char> bytes(sizeof(unsigned long));
+            std::memcpy(bytes.data(), &l, sizeof(unsigned long));
+            this->_buffer.insert(this->_buffer.end(), bytes.begin(), bytes.end());
         }
     private:
         std::vector<char> _buffer;

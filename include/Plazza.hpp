@@ -21,6 +21,7 @@
 #include <deque>
 #include <thread>
 #include <semaphore>
+#include <map>
 
 namespace plazza {
     class Holders {
@@ -38,10 +39,15 @@ namespace plazza {
         }
         std::binary_semaphore &getRunnablesSem() { return this->_runnables_sem; }
 
+        unsigned long getNextPizzaId() {
+            return this->_nextPizzaId++;
+        }
+
     private:
         comm::PacketHandler _packet_handler;
         std::binary_semaphore _runnables_sem = std::binary_semaphore(1);
         std::deque<std::function<void(void)>> _main_thread_runnables;
+        unsigned long _nextPizzaId = 1;
     };
 
     class Managers {
@@ -67,13 +73,14 @@ namespace plazza {
         ~KitchenSpec() = default;
 
         std::string getId() { return this->_id; }
-        int getOvens() { return this->ovens; }
+        unsigned int getOvens() { return this->ovens; }
         void increaseOvens() { this->ovens++; }
         void decreaseOvens() { this->ovens--; }
+        void doubleOvens() { this->ovens *= 2; }
         IngredientStock<1> &getStock() { return this->_stock; }
     protected:
         std::string _id;
-        int ovens;
+        unsigned int ovens;
         IngredientStock<1> _stock;
     };
 
@@ -91,13 +98,69 @@ namespace plazza {
             return *this;
         }
 
+        void print(std::string const &text) {
+            std::cout << "[Kitchen " << this->_spec.getId() << "] " << text << std::endl;
+        }
+
+        Kitchen &operator<<(std::string const &text) {
+            std::cout << "[Kitchen " << this->_spec.getId() << "] " << text << std::endl;
+            return *this;
+        }
+
+        Kitchen &operator<<(Pizza &pizza) {
+            auto id = this->_holders.getNextPizzaId();
+            this->_pizzas[id] = pizza;
+
+            this->print("Dispatching pizza " + std::to_string(id) + " to oven");
+
+            // Decrease ovens count
+            this->_spec.decreaseOvens();
+
+            // Remove the ingredients from the stock
+            for (auto &ingredient : pizza.getIngredients()) {
+                this->_spec.getStock().consume(ingredient);
+            }
+
+            comm::PizzaOrderPacket packet(id, pizza);
+            *this << packet;
+
+            this->updateLastCommandMillis();
+            return *this;
+        }
+
+        void updateLastCommandMillis() {
+            this->_last_command_millis = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        }
+
+        bool hasEnoughIngredientsFor(Pizza &pizza) {
+            for (auto &ingredient : pizza.getIngredients()) {
+                if (this->_spec.getStock().getIngredient(ingredient) == 0)
+                    return false;
+            }
+            return true;
+        }
+
         KitchenSpec &getSpec() { return this->_spec; }
+        std::map<unsigned long, Pizza> &getPizzas() { return this->_pizzas; }
+
+        void close() {
+            this->_close = true;
+            this->_input_pipe->destroy();
+            this->_output_pipe->destroy();
+            this->print("Closing kitchen");
+        }
+        bool isClosed() { return this->_close; }
     private:
+        Holders &_holders;
         KitchenSpec _spec;
         std::unique_ptr<process::ForkProcess> _process = std::unique_ptr<process::ForkProcess>(nullptr);
         std::unique_ptr<file::Pipe> _output_pipe = std::unique_ptr<file::Pipe>(nullptr);
         std::unique_ptr<file::Pipe> _input_pipe = std::unique_ptr<file::Pipe>(nullptr);
         std::thread _thread;
+        std::thread _watcher;
+        long _last_command_millis = 0;
+        std::map<unsigned long, Pizza> _pizzas;
+        bool _close = false;
     };
 
     class LocalKitchen {
@@ -107,6 +170,11 @@ namespace plazza {
 
         LocalKitchen &operator<<(comm::Packet &packet) {
             packet >> *this->_output_pipe;
+            return *this;
+        }
+
+        LocalKitchen &operator<<(std::string const &text) {
+            std::cout << "[LocalKitchen " << this->_spec.getId() << "] " << text << std::endl;
             return *this;
         }
 

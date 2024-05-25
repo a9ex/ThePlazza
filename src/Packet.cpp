@@ -22,7 +22,7 @@ comm::Packet &comm::Packet::operator>>(file::Pipe &pipe)
 
 // Deserialize from a pipe
 
-comm::Packet &comm::Packet::operator<<(const buffer::ByteBuf buffer)
+comm::Packet &comm::Packet::operator<<(buffer::ByteBuf &buffer)
 {
     this->deserialize(buffer);
     return *this;

@@ -13,13 +13,13 @@
 template <size_t I>
 class IngredientStock {
     public:
-        IngredientStock() : m_semaphore(I), m_ingredients(static_cast<size_t>(plazza::PizzaIngredient::INGREDIENT_ITER_END), 0) {}
+        IngredientStock() : m_semaphore(I), m_ingredients(static_cast<size_t>(plazza::PizzaIngredient::INGREDIENT_ITER_END), 5) {}
         ~IngredientStock() = default;
 
         IngredientStock(const IngredientStock &other) : m_semaphore(I), m_ingredients(other.m_ingredients) {}
         IngredientStock& operator=(const IngredientStock&) {
             m_semaphore = I;
-            m_ingredients = std::vector<std::size_t>(static_cast<size_t>(plazza::PizzaIngredient::INGREDIENT_ITER_END), 0);
+            m_ingredients = std::vector<std::size_t>(static_cast<size_t>(plazza::PizzaIngredient::INGREDIENT_ITER_END), 5);
             return *this;
         }
 
