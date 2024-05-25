@@ -26,6 +26,7 @@ namespace comm {
             KITCHEN_REFILL,
             PIZZA_ORDER,
             PIZZA_READY,
+            PIZZA_CHANGE_STATUS,
         };
     public:
         Packet(Type type) : _type(type) {}
@@ -147,6 +148,34 @@ namespace comm {
         int _id = 100;
     };
 
+    class PizzaChangeStatusPacket : public Packet {
+    public:
+        PizzaChangeStatusPacket() : Packet(PIZZA_CHANGE_STATUS) {}
+        PizzaChangeStatusPacket(unsigned long id, bool status) : Packet(PIZZA_CHANGE_STATUS), _id(id), _status(status) {}
+        ~PizzaChangeStatusPacket() = default;
+
+        buffer::ByteBuf serialize() const override {
+            buffer::ByteBuf buffer;
+
+            buffer.writeUnsignedLong(this->_id);
+            buffer.writeInt(this->_status ? 1 : 0);
+
+            return buffer;
+        }
+
+        void deserialize(buffer::ByteBuf &buff) override {
+            this->_id = buff.readUnsignedLong();
+            this->_status = buff.readInt();
+        }
+
+        unsigned long getId() const { return this->_id; }
+        bool getStatus() const { return this->_status ? true : false; }
+
+    private:
+        unsigned long _id;
+        bool _status;
+    };
+
     class PacketHandler {
     public:
         PacketHandler() = default;
@@ -179,6 +208,7 @@ namespace comm {
             {Packet::KITCHEN_REFILL, []() { return std::make_shared<KitchenRefillPacket>(); }},
             {Packet::PIZZA_ORDER, []() { return std::make_shared<PizzaOrderPacket>(); }},
             {Packet::PIZZA_READY, []() { return std::make_shared<PizzaReadyPacket>(); }},
+            {Packet::PIZZA_CHANGE_STATUS, []() { return std::make_shared<PizzaChangeStatusPacket>(); }},
         };
     };
 };

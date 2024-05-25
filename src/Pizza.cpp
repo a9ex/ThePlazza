@@ -81,3 +81,20 @@ plazza::Pizza plazza::Pizza::getPizzaFromId(const unsigned long &id, const std::
     }
     throw std::runtime_error("Pizza not found");
 }
+
+std::string plazza::Pizza::getIngredientName(plazza::PizzaIngredient ingredient)
+{
+    std::map<PizzaIngredient, std::string> ingredientNames = {
+        {PizzaIngredient::Dough, "Dough"},
+        {PizzaIngredient::Tomato, "Tomato"},
+        {PizzaIngredient::Gruyere, "Gruyere"},
+        {PizzaIngredient::Ham, "Ham"},
+        {PizzaIngredient::Mushrooms, "Mushrooms"},
+        {PizzaIngredient::Steak, "Steak"},
+        {PizzaIngredient::Eggplant, "Eggplant"},
+        {PizzaIngredient::GoatCheese, "GoatCheese"},
+        {PizzaIngredient::ChiefLove, "ChiefLove"},
+    };
+
+    return ingredientNames.at(ingredient);
+}

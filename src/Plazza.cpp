@@ -150,6 +150,12 @@ void plazza::PacketReceiver::onReceive(plazza::Holders &holders,
         kitchen.updateLastCommandMillis();
         kitchen.getPizzas().erase(packet.getId());
    }
+
+    if (comm::Packet::Type::PIZZA_CHANGE_STATUS == p.getType()) {
+        comm::PizzaChangeStatusPacket packet = dynamic_cast<comm::PizzaChangeStatusPacket &>(p);
+        plazza::Pizza pizza = plazza::Pizza::getPizzaFromId(packet.getId(), kitchen.getPizzas());
+        pizza.setIsCooking(packet.getStatus());
+    }
 }
 
 void plazza::LocalKitchen::onPacketReceived(comm::Packet &packet)
@@ -159,6 +165,7 @@ void plazza::LocalKitchen::onPacketReceived(comm::Packet &packet)
 
         this->_thread_pool->addTask([this, pizza_order_packet] {
             *this << "Cooking pizza " + pizza_order_packet.getPizza().getName() + " (size " + pizza_order_packet.getPizza().getSizeName() + ")";
+            comm::PizzaChangeStatusPacket(pizza_order_packet.getId(), true) >> *this->_output_pipe;
             std::this_thread::sleep_for(std::chrono::milliseconds(((long) (pizza_order_packet.getPizza().getCookingTime() * 1000))));
             comm::PizzaReadyPacket(pizza_order_packet.getId()) >> *this->_output_pipe;
         });
@@ -178,11 +185,6 @@ std::shared_ptr<plazza::Kitchen> plazza::PizzaBalancer::balancePizza(plazza::Piz
     // Remove kitchens that are not available
     kitchens.erase(std::remove_if(kitchens.begin(), kitchens.end(), [](std::shared_ptr<plazza::Kitchen> &kitchen) {
         return kitchen->getSpec().getOvens() == 0;
-    }), kitchens.end());
-
-    // Remove kitchens with not enough ingredients
-    kitchens.erase(std::remove_if(kitchens.begin(), kitchens.end(), [&pizza](std::shared_ptr<plazza::Kitchen> &kitchen) {
-        return !kitchen->hasEnoughIngredientsFor(pizza);
     }), kitchens.end());
 
     // Sort by kitchen according to the greatest ingredient number of the least

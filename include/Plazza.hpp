@@ -68,12 +68,14 @@ namespace plazza {
             int ovens
         ) :
             _id(id),
-            ovens(ovens)
+            ovens(ovens),
+            cookers(ovens)
         {}
         ~KitchenSpec() = default;
 
         std::string getId() { return this->_id; }
         unsigned int getOvens() { return this->ovens; }
+        unsigned int getCookers() { return this->cookers; }
         void increaseOvens() { this->ovens++; }
         void decreaseOvens() { this->ovens--; }
         void doubleOvens() { this->ovens *= 2; }
@@ -81,6 +83,7 @@ namespace plazza {
     protected:
         std::string _id;
         unsigned int ovens;
+        unsigned int cookers;
         IngredientStock _stock;
     };
 
