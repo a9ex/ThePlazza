@@ -10,37 +10,15 @@
     #include <semaphore>
     #include "Pizza.hpp"
 
-template <size_t I>
 class IngredientStock {
     public:
-        IngredientStock() = default;
-        std::size_t getIngredient(plazza::PizzaIngredient ingredient)
-        {
-            std::size_t value = 0;
-
-            m_semaphore.acquire();
-            value = m_ingredients[ingredient];
-            m_semaphore.release();
-        }
-
-        void refillAll()
-        {
-            m_semaphore.acquire();
-            for (std::size_t &i : m_ingredients)
-                ++i;
-            m_semaphore.release();
-        }
-
-        void consume(plazza::PizzaIngredient ingredient)
-        {
-            m_semaphore.acquire();
-            --m_ingredients[ingredient];
-            m_semaphore.release();
-        }
-
+        IngredientStock();
+        std::size_t getIngredient(plazza::PizzaIngredient ingredient);
+        void refillAll();
+        void consume(plazza::PizzaIngredient ingredient);
     private:
-        std::counting_semaphore<I> m_semaphore;
-        std::vector<std::size_t> m_ingredients;
+        std::binary_semaphore m_semaphore;
+        std::size_t m_ingredients[plazza::PizzaIngredient::IngredientCount];
 };
 
 #endif /* !__INGREDIENT_STOCK_HPP_ */
