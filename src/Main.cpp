@@ -18,9 +18,71 @@
 
 #ifndef CRITERION
 
+void addRestaurantPizzas(std::map<std::string, plazza::Pizza> &pizzas)
+{
+    plazza::PizzaBuilder()
+    .setCookingTime(1)
+    .setIngredients({plazza::PizzaIngredient::Dough, plazza::PizzaIngredient::Tomato, plazza::PizzaIngredient::Gruyere})
+    .setPizzaName("margarita")
+    .setPizzaType(plazza::PizzaType::Margarita)
+    .addToMap(pizzas);
+
+    plazza::PizzaBuilder()
+    .setCookingTime(2)
+    .setPizzaName("regina")
+    .setIngredients({plazza::PizzaIngredient::Dough, plazza::PizzaIngredient::Tomato, plazza::PizzaIngredient::Gruyere, plazza::PizzaIngredient::Ham, plazza::PizzaIngredient::Mushrooms})
+    .setPizzaType(plazza::PizzaType::Regina)
+    .addToMap(pizzas);
+
+    plazza::PizzaBuilder()
+    .setCookingTime(2)
+    .setPizzaName("americana")
+    .setIngredients({plazza::PizzaIngredient::Dough, plazza::PizzaIngredient::Tomato, plazza::PizzaIngredient::Gruyere, plazza::PizzaIngredient::Steak})
+    .setPizzaType(plazza::PizzaType::Americana)
+    .addToMap(pizzas);
+
+    plazza::PizzaBuilder()
+    .setCookingTime(4)
+    .setPizzaName("fantasia")
+    .setIngredients({plazza::PizzaIngredient::Dough, plazza::PizzaIngredient::Tomato, plazza::PizzaIngredient::Eggplant, plazza::PizzaIngredient::GoatCheese, plazza::PizzaIngredient::ChiefLove})
+    .setPizzaType(plazza::PizzaType::Fantasia)
+    .addToMap(pizzas);
+}
+
+void handleInput(plazza::Holders &holders, std::map<std::string, plazza::Pizza> &pizzas, std::vector<std::shared_ptr<plazza::Kitchen>> &kitchens)
+{
+    std::string input;
+    while (true) {
+        std::getline(std::cin, input);
+        if (input == "exit") {
+            std::cout << "Thanks for coming at our Pappa's Pizzeria ! Babaye !" << std::endl;
+            exit(0);
+        }
+
+        auto pizza = pizzas.find(input);
+        if (pizza == pizzas.end()) {
+            std::cout << "Pizza not found!" << std::endl;
+            continue;
+        }
+
+        plazza::PizzaBalancer balancer;
+        auto chosenKitchen = balancer.balancePizza(pizza->second, kitchens);
+
+        if (!chosenKitchen) {
+            std::cout << "No kitchen available! Creating a new one" << std::endl;
+            plazza::KitchenSpec spec(std::to_string(kitchens.size()), 3);
+            kitchens.push_back(std::make_shared<plazza::Kitchen>(holders, spec));
+            chosenKitchen = kitchens.back();
+        }
+
+        *chosenKitchen << pizza->second;
+    }
+}
+
 int main(void)
 {
     plazza::Holders holders;
+    std::map<std::string, plazza::Pizza> pizzas;
 
     int numberOfKitchens = 3;
     unsigned int ovensPerKitchen = 3;
@@ -30,14 +92,12 @@ int main(void)
     //     kitchens.push_back(std::make_shared<plazza::Kitchen>(holders, spec));
     // }
 
-    auto pizza = plazza::PizzaBuilder()
-            .setCookingTime(1)
-            .setIngredients({plazza::PizzaIngredient::ChiefLove, plazza::PizzaIngredient::Gruyere})
-            .setPizzaName("Miam hannn")
-            .setPizzaType(plazza::PizzaType::Regina)
-            .build();
+    addRestaurantPizzas(pizzas);
 
-    for (int i = 0; i < 100; i++) {
+    // create thread to getline
+
+
+    for (int i = 0; i < 6; i++) {
         plazza::PizzaBalancer balancer;
         auto chosenKitchen = balancer.balancePizza(pizza, kitchens);
 

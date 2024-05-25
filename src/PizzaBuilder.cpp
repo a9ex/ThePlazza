@@ -42,3 +42,9 @@ plazza::Pizza plazza::PizzaBuilder::build()
     std::cout << "[PizzaBuilder] Mamamia, assembling pizza, ready and better than FivePizza" << std::endl;
     return _pizza;
 }
+
+plazza::PizzaBuilder &plazza::PizzaBuilder::addToMap(std::map<std::string, plazza::Pizza> &pizzas)
+{
+    pizzas[_pizza.getName()] = _pizza;
+    return *this;
+}
