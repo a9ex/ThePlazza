@@ -13,12 +13,13 @@
 class IngredientStock {
     public:
         IngredientStock();
+        IngredientStock(const IngredientStock &);
         std::size_t getIngredient(plazza::PizzaIngredient ingredient);
         void refillAll();
         void consume(plazza::PizzaIngredient ingredient);
     private:
         std::binary_semaphore m_semaphore;
-        std::size_t m_ingredients[plazza::PizzaIngredient::IngredientCount];
+        std::size_t m_ingredients[plazza::PizzaIngredient::INGREDIENT_ITER_END];
 };
 
 #endif /* !__INGREDIENT_STOCK_HPP_ */

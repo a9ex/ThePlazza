@@ -11,8 +11,18 @@ IngredientStock::IngredientStock() : m_semaphore{1}
 {
     std::size_t i = 0;
 
-    for (; plazza::PizzaIngredient::IngredientCount > i; ++i)
+    for (; plazza::PizzaIngredient::INGREDIENT_ITER_END > i; ++i)
         m_ingredients[i] = 5;
+}
+
+IngredientStock::IngredientStock(const IngredientStock &) : m_semaphore{1}
+{
+    std::size_t i = 0;
+
+    m_semaphore.acquire();
+    for (; plazza::PizzaIngredient::INGREDIENT_ITER_END > i; ++i)
+        m_ingredients[i] = 5;
+    m_semaphore.release();
 }
 
 std::size_t IngredientStock::getIngredient(plazza::PizzaIngredient ingredient)
@@ -30,7 +40,7 @@ void IngredientStock::refillAll()
     std::size_t i = 0;
 
     m_semaphore.acquire();
-    for (; plazza::PizzaIngredient::IngredientCount > i; ++i)
+    for (; plazza::PizzaIngredient::INGREDIENT_ITER_END > i; ++i)
         ++m_ingredients[i];
     m_semaphore.release();
 }

@@ -77,11 +77,11 @@ namespace plazza {
         void increaseOvens() { this->ovens++; }
         void decreaseOvens() { this->ovens--; }
         void doubleOvens() { this->ovens *= 2; }
-        IngredientStock<1> &getStock() { return this->_stock; }
+        IngredientStock &getStock() { return this->_stock; }
     protected:
         std::string _id;
         unsigned int ovens;
-        IngredientStock<1> _stock;
+        IngredientStock _stock;
     };
 
     class Kitchen {

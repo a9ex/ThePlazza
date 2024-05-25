@@ -16,16 +16,16 @@ Test(IngredientStock, test_impl)
     std::size_t j = 0;
 
     std::cout << "IngredientStock::IngredientStock()" << std::endl;
-    for (; plazza::PizzaIngredient::IngredientCount > j; ++j)
+    for (; plazza::PizzaIngredient::INGREDIENT_ITER_END > j; ++j)
         cr_assert(eq(int, 5, i.getIngredient(static_cast<plazza::PizzaIngredient>(j))));
     std::cout << "IngredientStock::refillAll()" << std::endl;
     i.refillAll();
-    for (j = 0; plazza::PizzaIngredient::IngredientCount > j; ++j)
+    for (j = 0; plazza::PizzaIngredient::INGREDIENT_ITER_END > j; ++j)
         cr_assert(eq(int, 6, i.getIngredient(static_cast<plazza::PizzaIngredient>(j))));
     std::cout << "IngredientStock::consume()" << std::endl;
-    for (j = 0; plazza::PizzaIngredient::IngredientCount > j; ++j)
+    for (j = 0; plazza::PizzaIngredient::INGREDIENT_ITER_END > j; ++j)
         i.consume(static_cast<plazza::PizzaIngredient>(j));
-    for (j = 0; plazza::PizzaIngredient::IngredientCount > j; ++j)
+    for (j = 0; plazza::PizzaIngredient::INGREDIENT_ITER_END > j; ++j)
         cr_assert(eq(int, 5, i.getIngredient(static_cast<plazza::PizzaIngredient>(j))));
     std::cout << "IngredientStock::~IngredientStock()" << std::endl;
 }
