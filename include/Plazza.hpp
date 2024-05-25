@@ -99,11 +99,11 @@ namespace plazza {
         }
 
         void print(std::string const &text) {
-            std::cout << "[Kitchen " << this->_spec.getId() << "] " << text << std::endl;
+            std::osyncstream(std::cout) << "[Kitchen " << this->_spec.getId() << "] " << text << std::endl;
         }
 
         Kitchen &operator<<(std::string const &text) {
-            std::cout << "[Kitchen " << this->_spec.getId() << "] " << text << std::endl;
+            std::osyncstream(std::cout) << "[Kitchen " << this->_spec.getId() << "] " << text << std::endl;
             return *this;
         }
 
@@ -111,7 +111,7 @@ namespace plazza {
             auto id = this->_holders.getNextPizzaId();
             this->_pizzas[id] = pizza;
 
-            this->print("Dispatching pizza " + std::to_string(id) + " to oven");
+            this->print("Dispatching " + pizza.getName() + " (size " + pizza.getSizeName() + ") to oven.");
 
             // Decrease ovens count
             this->_spec.decreaseOvens();
@@ -174,7 +174,7 @@ namespace plazza {
         }
 
         LocalKitchen &operator<<(std::string const &text) {
-            std::cout << "[LocalKitchen " << this->_spec.getId() << "] " << text << std::endl;
+            std::osyncstream(std::cout) << "[LocalKitchen " << this->_spec.getId() << "] " << text << std::endl;
             return *this;
         }
 
