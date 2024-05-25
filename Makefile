@@ -30,7 +30,7 @@ endif
 SRCS			:=	$(shell find src -name '*.cpp')
 OBJS			:=	$(SRCS:.cpp=.o)
 
-TESTS_CXXFLAGS	:=	-g -Wall -Wextra -std=c++11
+TESTS_CXXFLAGS	:=	-g -Wall -Wextra -std=c++23
 TESTS_SRCS		:=	$(shell find tests -type f -name 'Tests*.cpp')
 TESTS_OBJS		:=	$(TESTS_SRCS:.cpp=.o)
 
@@ -53,7 +53,7 @@ $(NAME):	$(OBJS)
 tests/%.o:	tests/%.cpp
 	@$(CC) $(CPPFLAGS) $(TESTS_CXXFLAGS) -o $@ -c $<
 
-tests_run:	CXXFLAGS+= -g --coverage -DCRITERION
+tests_run:	CXXFLAGS+= -g -DCRITERION --coverage
 tests_run:	fclean	$(OBJS)	$(TESTS_OBJS)
 	$(CC) $(CPPFLAGS) $(CXXFLAGS) $(OBJS) $(TESTS_OBJS) -o unit_tests \
 	-lcriterion
