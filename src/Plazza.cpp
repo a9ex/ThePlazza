@@ -180,15 +180,28 @@ std::shared_ptr<plazza::Kitchen> plazza::PizzaBalancer::balancePizza(plazza::Piz
         return kitchen->getSpec().getOvens() == 0;
     }), kitchens.end());
 
-    // Sort by kitchen with the minimum amount of ovens
-    std::sort(kitchens.begin(), kitchens.end(), [](std::shared_ptr<plazza::Kitchen> &a, std::shared_ptr<plazza::Kitchen> &b) {
-        return a->getSpec().getOvens() < b->getSpec().getOvens();
-    });
-
     // Remove kitchens with not enough ingredients
     kitchens.erase(std::remove_if(kitchens.begin(), kitchens.end(), [&pizza](std::shared_ptr<plazza::Kitchen> &kitchen) {
         return !kitchen->hasEnoughIngredientsFor(pizza);
     }), kitchens.end());
+
+    // Sort by kitchen according to the greatest ingredient number of the least
+    // represented ingredient required to cook a pizza. Sorts in descending
+    // order.
+    std::sort(kitchens.begin(), kitchens.end(), [&pizza](std::shared_ptr<plazza::Kitchen> &a, std::shared_ptr<plazza::Kitchen> &b) {
+        std::vector<std::size_t> aIngredients{0};
+        std::vector<std::size_t> bIngredients{0};
+        std::size_t aMin = 0;
+        std::size_t bMin = 0;
+
+        for (const plazza::PizzaIngredient &i : pizza.getIngredients()) {
+            aIngredients.push_back(a->getSpec().getStock().getIngredient(i));
+            bIngredients.push_back(b->getSpec().getStock().getIngredient(i));
+        }
+        aMin = *std::min_element(aIngredients.begin(), aIngredients.end());
+        bMin = *std::min_element(bIngredients.begin(), bIngredients.end());
+        return aMin > bMin;
+    });
 
     // Get the first kitchen
     if (!kitchens.empty())
