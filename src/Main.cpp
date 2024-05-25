@@ -31,13 +31,13 @@ int main(void)
     // }
 
     auto pizza = plazza::PizzaBuilder()
-            .setCookingTime(10)
+            .setCookingTime(1)
             .setIngredients({plazza::PizzaIngredient::ChiefLove, plazza::PizzaIngredient::Gruyere})
             .setPizzaName("Miam hannn")
             .setPizzaType(plazza::PizzaType::Regina)
             .build();
 
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 100; i++) {
         plazza::PizzaBalancer balancer;
         auto chosenKitchen = balancer.balancePizza(pizza, kitchens);
 
@@ -49,8 +49,6 @@ int main(void)
         }
 
         *chosenKitchen << pizza;
-        // Wait 250ms
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
     auto &runnabled_queue = holders.getMainThreadRunnables();
