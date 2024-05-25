@@ -10,8 +10,10 @@
 #include <string>
 #include <vector>
 
+#pragma once
+
 namespace plazza {
-    /**
+        /**
      * @brief Represents the type of a pizza (do not modify the values)
      * Required by the subject
      */

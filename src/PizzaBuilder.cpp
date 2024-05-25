@@ -43,8 +43,8 @@ plazza::Pizza plazza::PizzaBuilder::build()
     return _pizza;
 }
 
-plazza::PizzaBuilder &plazza::PizzaBuilder::addToMap(std::map<std::string, plazza::Pizza> &pizzas)
+plazza::PizzaBuilder &plazza::PizzaBuilder::addPizzaToMap(std::map<std::string, plazza::Pizza> &pizzas)
 {
-    pizzas[_pizza.getName()] = _pizza;
+    pizzas[_pizza.getName()] = this->build();
     return *this;
 }

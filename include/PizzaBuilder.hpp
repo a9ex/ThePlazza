@@ -56,11 +56,11 @@ namespace plazza {
             Pizza build();
 
             /**
-             * @brief Adds the pizza to a map of pizzas
+             * @brief Take an existing mapping of pizzas and append the new pizza to it
              *
-             * @param map the map of pizzas
+             * @param pizzas the existing mapping of pizzas
              */
-            PizzaBuilder &addToMap(std::map<std::string, plazza::Pizza> &pizzas);
+            PizzaBuilder &addPizzaToMap(std::map<std::string, Pizza> &pizzas);
         protected:
         private:
             Pizza _pizza;
