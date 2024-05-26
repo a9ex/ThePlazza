@@ -21,7 +21,7 @@ plazza::Kitchen::Kitchen(plazza::Holders &holders, plazza::KitchenSpec spec)
     // After creating the LocalKitchen, we double the amount of ovens (double the capacity)
     this->_spec.doubleOvens();
 
-    std::osyncstream(std::cout) << "Creating Kitchen named '" << this->_spec.getId() << "'" << std::endl;
+    plazza::Logger::printAndLog("Creating Kitchen named '" + this->_spec.getId() + "'");
 
     // Create pipes
     this->_input_pipe = std::make_unique<file::Pipe>(
@@ -125,7 +125,7 @@ plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec
 
     this->_thread_pool->close(false);
 
-    std::osyncstream(std::cout) << "Fork finished" << std::endl;
+    plazza::Logger::printAndLog("Fork finished");
 }
 
 void plazza::PacketReceiver::onReceive(plazza::Holders &holders,

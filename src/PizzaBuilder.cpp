@@ -8,6 +8,7 @@
 #include <iostream>
 #include <syncstream>
 #include "PizzaBuilder.hpp"
+#include "Logger.hpp"
 
 plazza::PizzaBuilder &plazza::PizzaBuilder::setPizzaType(PizzaType type)
 {
@@ -40,7 +41,7 @@ plazza::PizzaBuilder &plazza::PizzaBuilder::setIngredients(const std::vector<Piz
 
 plazza::Pizza plazza::PizzaBuilder::build()
 {
-    std::osyncstream(std::cout) << "[PizzaBuilder] Mamamia, builded " << _pizza.getName() << " pizza" << std::endl;
+    plazza::Logger::printAndLog("[PizzaBuilder] Mamamia, builded " + _pizza.getName() + " pizza");
     return _pizza;
 }
 

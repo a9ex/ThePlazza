@@ -1,4 +1,12 @@
+/*
+** EPITECH PROJECT, 2024
+** Concurrent Programming
+** File description:
+** PizzaOrderParser.cpp
+*/
+
 #include "PizzaOrderParser.hpp"
+#include "Logger.hpp"
 #include <algorithm>
 #include <sstream>
 #include <iostream>
@@ -105,7 +113,7 @@ std::vector<plazza::PizzaOrderParser::PizzaOrder> plazza::PizzaOrderParser::pars
 
         for (int i = 0; i < quantity; i++) {
             orders.push_back(pizzaOrder);
-            std::osyncstream(std::cout) << "[PizzaOrderParser] Parsed order: Adding pizza of type " << orderTokens[0] << " and size " << orderTokens[1] << ". Ready to be dispatched to the kitchens" << std::endl;
+            plazza::Logger::printAndLog("[PizzaOrderParser] Parsed order: Adding pizza of type " + orderTokens[0] + " and size " + orderTokens[1] + ". Ready to be dispatched to the kitchens");
         }
 
     }
