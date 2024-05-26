@@ -56,6 +56,10 @@ void plazza::Input::handleUserInput(
             plazza::Logger::printAndLog("We have " + std::to_string(kitchens.size()) + " kitchens opened at the moment.\n");
 
             for (auto &kitchen : kitchens) {
+                if (kitchen->isClosed()) {
+                    plazza::Logger::printAndLog("Kitchen " + kitchen->getSpec().getId() + " (" + std::to_string(kitchen->getSpec().getCookers()) + " cookers) : Closed due to inactivity\n");
+                    continue;
+                }
                 plazza::Logger::printAndLog("Kitchen " + kitchen->getSpec().getId() + " (" + std::to_string(kitchen->getSpec().getCookers()) + " cookers) : " + (kitchen->getSpec().getOvens() == kitchen->getSpec().getCookers() * 2 ? "Waiting for commands (no pizzas) - closing soon..." : "Cooking pizzas"));
                 plazza::Logger::printAndLog("\tCurrent ingredients stock:");
                 plazza::Logger::printAndLog(_getIngredientStock(kitchen->getSpec()));
