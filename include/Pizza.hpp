@@ -134,13 +134,27 @@ namespace plazza {
             void setIngredients(const std::vector<PizzaIngredient> &ingredients);
 
             /**
+             * @brief Set the cooking status of the pizza
+             *
+             * @param isCooking the cooking status
+             */
+            void setIsCooking(bool isCooking) { this->isCooking = isCooking; }
+
+            /**
+             * @brief Get the cooking status of the pizza
+             *
+             * @return bool the cooking status
+             */
+            bool getIsCooking() const { return this->isCooking; }
+
+            /**
             * @brief Get a Pizza by its type
             *
             * @param type the type
             * @param pizzas the map of pizzas
             * @return Pizza the pizza
             */
-            static Pizza getPizzaByType(plazza::PizzaType type, std::map<std::string, plazza::Pizza> &pizzas);
+            static Pizza &getPizzaByType(plazza::PizzaType type, std::map<std::string, plazza::Pizza> &pizzas);
 
             /**
              * @brief Get the Pizza from its id
@@ -149,7 +163,15 @@ namespace plazza {
              * @param pizzas the map of pizzas
              * @return Pizza the pizza
              */
-            static Pizza getPizzaFromId(const unsigned long &id, const std::map<unsigned long, plazza::Pizza> &pizzas);
+            static Pizza &getPizzaFromId(const unsigned long &id, std::map<unsigned long, plazza::Pizza> &pizzas);
+
+            /**
+             * @brief Get the name of an ingredient from its enum
+             *
+             * @param ingredient Ingredient enum
+             * @return std::string the name of the ingredient
+             */
+            static std::string getIngredientName(PizzaIngredient ingredient);
         protected:
         private:
             double _cookingTime;
@@ -157,6 +179,8 @@ namespace plazza {
             PizzaSize _size = PizzaSize::M;
             std::string _name;
             std::vector<PizzaIngredient> _ingredients;
+
+            bool isCooking = false;
 
             std::map<PizzaSize, std::string> _sizeNames = {
                 {PizzaSize::S, "S"},
