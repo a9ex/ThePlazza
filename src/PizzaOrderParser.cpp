@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <sstream>
 #include <iostream>
-#include <syncstream>
 
 plazza::PizzaOrderParser::PizzaOrderParser(std::map<std::string, Pizza> &pizzas)
     : _pizzas(pizzas)
