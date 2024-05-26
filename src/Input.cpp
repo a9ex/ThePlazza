@@ -89,7 +89,7 @@ void plazza::Input::handleUserInput(
 
             if (!chosenKitchen) {
                 plazza::Logger::printAndLog("No kitchen available! Creating a new one");
-                plazza::KitchenSpec spec(std::to_string(kitchens.size()), 3);
+                plazza::KitchenSpec spec(std::to_string(kitchens.size()), plazza::PlazzaSpecs::getInstance().getSpec().cooks);
                 kitchens.push_back(std::make_shared<plazza::Kitchen>(holders, spec));
                 chosenKitchen = kitchens.back();
             }
