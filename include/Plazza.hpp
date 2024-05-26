@@ -44,11 +44,17 @@ namespace plazza {
             return this->_nextPizzaId++;
         }
 
+        void close() {
+            this->_close = true;
+        }
+        bool isClosed() { return this->_close; }
+
     private:
         comm::PacketHandler _packet_handler;
         std::binary_semaphore _runnables_sem = std::binary_semaphore(1);
         std::deque<std::function<void(void)>> _main_thread_runnables;
         unsigned long _nextPizzaId = 1;
+        bool _close = false;
     };
 
     class Managers {
@@ -148,9 +154,16 @@ namespace plazza {
         std::map<unsigned long, Pizza> &getPizzas() { return this->_pizzas; }
 
         void close() {
+            if (this->_close)
+                return;
             this->_close = true;
+
+            comm::KitchenClosePacket packet;
+            *this << packet;
+
             this->_input_pipe->destroy();
             this->_output_pipe->destroy();
+
             this->print("Closing kitchen");
         }
         bool isClosed() { return this->_close; }
@@ -212,6 +225,7 @@ namespace plazza {
         std::map<unsigned long, Pizza> _pizza_queue;
         std::mutex _pizza_queue_mutex;
         std::mutex _oven_mutex;
+        bool _close = false;
     };
 
     class PlazzaContext {

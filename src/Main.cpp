@@ -68,9 +68,10 @@ int main(void)
     std::mutex mutex;
 
     std::thread userInputThread(plazza::Input::handleUserInput, std::ref(holders), std::ref(pizzas), std::ref(kitchens), std::ref(mutex));
+    userInputThread.detach();
 
     auto &runnabled_queue = holders.getMainThreadRunnables();
-    while (true) {
+    while (!holders.isClosed()) {
         mutex.lock();
         holders.getRunnablesSem().acquire();
         while (runnabled_queue.size() > 0) {
@@ -80,6 +81,11 @@ int main(void)
         holders.getRunnablesSem().release();
         mutex.unlock();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    // Close kitchens
+    for (auto &kitchen : kitchens) {
+        kitchen->close();
     }
 
     return 0;

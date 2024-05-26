@@ -7,23 +7,25 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <cerrno>
 #include "File.hpp"
 #include "unistd.h"
 
 file::Pipe::Pipe(std::string const &path, Mode mode)
+    : _path(path)
 {
     int m = (mode == READ ? O_RDONLY : O_WRONLY);
 
     if (mkfifo(path.c_str(), 0777) != 0) {
         if (errno == EEXIST)
             goto style;
-        perror("mkfifo");
+        std::perror("mkfifo");
         throw CreateException("Failed to create pipe");
     }
 style:
     this->_fd = open(path.c_str(), m);
     if (this->_fd == -1) {
-        perror("open");
+        std::perror("open");
         throw InitException("Failed to open pipe");
     }
 
@@ -34,6 +36,13 @@ void file::Pipe::destroy()
 {
     close(this->_fd);
     this->_fd = -1;
+}
+
+void file::Pipe::deleteFile()
+{
+    close(this->_fd);
+    this->_fd = -1;
+    std::remove(this->_path.c_str());
 }
 
 void file::Pipe::writeSingle(char c)

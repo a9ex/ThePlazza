@@ -28,6 +28,7 @@ namespace comm {
             PIZZA_ORDER,
             PIZZA_READY,
             PIZZA_CHANGE_STATUS,
+            KITCHEN_CLOSE,
         };
     public:
         Packet(Type type) : _type(type) {}
@@ -177,6 +178,21 @@ namespace comm {
         bool _status;
     };
 
+    class KitchenClosePacket : public Packet {
+    public:
+        KitchenClosePacket() : Packet(KITCHEN_CLOSE) {}
+        ~KitchenClosePacket() = default;
+
+        buffer::ByteBuf serialize() const override {
+            buffer::ByteBuf buffer;
+
+            return buffer;
+        }
+
+        void deserialize(buffer::ByteBuf &buff) override {
+        }
+    };
+
     class PacketHandler {
     public:
         PacketHandler() = default;
@@ -210,6 +226,7 @@ namespace comm {
             {Packet::PIZZA_ORDER, []() { return std::make_shared<PizzaOrderPacket>(); }},
             {Packet::PIZZA_READY, []() { return std::make_shared<PizzaReadyPacket>(); }},
             {Packet::PIZZA_CHANGE_STATUS, []() { return std::make_shared<PizzaChangeStatusPacket>(); }},
+            {Packet::KITCHEN_CLOSE, []() { return std::make_shared<KitchenClosePacket>(); }},
         };
     };
 };

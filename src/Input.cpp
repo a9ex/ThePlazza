@@ -47,7 +47,8 @@ void plazza::Input::handleUserInput(
         mutex.lock();
         if (input == "exit") {
             plazza::Logger::printAndLog("Thanks for visiting our Papa's Pizzeria ! Babaye !");
-            std::exit(0);
+            holders.close();
+            return;
         }
 
         if (input == "status") {

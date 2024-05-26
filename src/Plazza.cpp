@@ -103,7 +103,7 @@ plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec
     // });
 
     this->_thread_pool->addTask([this] {
-        while (true) {
+        while (!this->_close) {
             std::this_thread::sleep_for(std::chrono::seconds(5));
             this->_spec.getStock().refillAll();
             comm::KitchenRefillPacket() >> *this->_output_pipe;
@@ -115,7 +115,7 @@ plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec
     // std::this_thread::sleep_for(std::chrono::seconds(1));
 
     comm::PacketHandler packet_handler;
-    while (true) {
+    while (!this->_close) {
         std::vector<std::shared_ptr<comm::Packet>> packets = packet_handler.constructPackets(this->_input_pipe->readBuf());
         if (!packets.empty()) {
             for (auto &packet : packets)
@@ -123,9 +123,12 @@ plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec
         }
     }
 
-    this->_thread_pool->close(false);
+    this->_input_pipe->destroy();
+    this->_output_pipe->destroy();
+    this->_input_pipe->deleteFile();
+    this->_output_pipe->deleteFile();
 
-    plazza::Logger::printAndLog("Fork finished");
+    this->_thread_pool->close(false);
 }
 
 void plazza::PacketReceiver::onReceive(plazza::Holders &holders,
@@ -164,6 +167,8 @@ void plazza::LocalKitchen::onPacketReceived(comm::Packet &packet)
         comm::PizzaOrderPacket pizza_order_packet = dynamic_cast<comm::PizzaOrderPacket &>(packet);
         this->addPizzaToQueue(pizza_order_packet.getId(), pizza_order_packet.getPizza());
         this->scheduleNextPizza();
+    } else if (comm::Packet::Type::KITCHEN_CLOSE == packet.getType()) {
+        this->_close = true;
     }
 }
 
