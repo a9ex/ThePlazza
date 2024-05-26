@@ -50,7 +50,7 @@ void addRestaurantPizzas(std::map<std::string, plazza::Pizza> &pizzas)
         .addPizzaToMap(pizzas);
 }
 
-void checkArgsIntegrity(int ac, char **av)
+void computeArguments(int ac, char **av)
 {
     plazza::PlazzaSpecs::PlazzaSpec specs;
 
@@ -84,7 +84,7 @@ int main(int ac, char **av)
     std::map<std::string, plazza::Pizza> pizzas;
     std::vector<std::shared_ptr<plazza::Kitchen>> kitchens;
 
-    checkArgsIntegrity(ac, av);
+    computeArguments(ac, av);
 
     addRestaurantPizzas(pizzas);
 
