@@ -53,7 +53,13 @@ void plazza::Input::handleUserInput(
 
         if (input == "status") {
             plazza::Logger::printAndLog("Mama mia ! Buongiorno ! Here's the current status of the restaurant Papa's Pizzeria :\n");
-            plazza::Logger::printAndLog("We have " + std::to_string(kitchens.size()) + " kitchens opened at the moment.\n");
+
+            std::vector<std::shared_ptr<plazza::Kitchen>> kitchensFiltered;
+            std::remove_copy_if(kitchens.begin(), kitchens.end(), std::back_inserter(kitchensFiltered), [](std::shared_ptr<plazza::Kitchen> &kitchen) {
+                return kitchen->isClosed();
+            });
+
+            plazza::Logger::printAndLog("We have " + std::to_string(kitchensFiltered.size()) + " kitchen(s) open and " + std::to_string(kitchens.size() - kitchensFiltered.size()) + " kitchen(s) closed\n");
 
             for (auto &kitchen : kitchens) {
                 if (kitchen->isClosed()) {
