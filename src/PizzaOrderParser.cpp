@@ -1,4 +1,12 @@
+/*
+** EPITECH PROJECT, 2024
+** Concurrent Programming
+** File description:
+** PizzaOrderParser.cpp
+*/
+
 #include "PizzaOrderParser.hpp"
+#include "Logger.hpp"
 #include <algorithm>
 #include <sstream>
 #include <iostream>
@@ -68,10 +76,10 @@ std::vector<plazza::PizzaOrderParser::PizzaOrder> plazza::PizzaOrderParser::pars
     std::string token;
     std::istringstream tokenStream(line);
 
-    std::cout << "[PizzaOrderParser] Parsing order: " << line << std::endl;
+    // std::osyncstream(std::cout) << "[PizzaOrderParser] Parsing order: " << line << std::endl;
 
     while (std::getline(tokenStream, token, ';')) {
-        std::cout << "[PizzaOrderParser] Got token: " << trim(token) << std::endl;
+        // std::osyncstream(std::cout) << "[PizzaOrderParser] Got token: " << trim(token) << std::endl;
         tokens.push_back(trim(token));
     }
 
@@ -104,7 +112,7 @@ std::vector<plazza::PizzaOrderParser::PizzaOrder> plazza::PizzaOrderParser::pars
 
         for (int i = 0; i < quantity; i++) {
             orders.push_back(pizzaOrder);
-            std::cout << "[PizzaOrderParser] Parsed order: Adding pizza of type " << orderTokens[0] << " and size " << orderTokens[1] << ". Ready to be dispatched to the kitchens" << std::endl;
+            plazza::Logger::printAndLog("[PizzaOrderParser] Parsed order: Adding pizza of type " + orderTokens[0] + " and size " + orderTokens[1] + ". Ready to be dispatched to the kitchens");
         }
 
     }

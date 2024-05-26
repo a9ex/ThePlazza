@@ -43,14 +43,9 @@ namespace file {
     public:
         Pipe(std::string const &path, Mode mode);
         ~Pipe() { this->destroy(); };
-        // Pipe(Pipe const &) = delete;
-        // Pipe(Pipe &&m) {
-        //     this->_fd = m._fd;
-        //     this->_mode = m._mode;
-        //     m._fd = -1;
-        // }
 
         void destroy();
+        void deleteFile();
 
         void writeSingle(char c);
         void writeBuf(std::vector<char> buffer);
@@ -75,5 +70,6 @@ namespace file {
     private:
         int _fd;
         Mode _mode;
+        std::string _path;
     };
 }

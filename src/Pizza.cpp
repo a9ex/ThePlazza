@@ -6,6 +6,7 @@
 */
 
 #include "Pizza.hpp"
+#include <stdexcept>
 
 double plazza::Pizza::getCookingTime() const
 {
@@ -45,4 +46,56 @@ void plazza::Pizza::setName(const std::string &name)
 void plazza::Pizza::setIngredients(const std::vector<plazza::PizzaIngredient> &ingredients)
 {
     _ingredients = ingredients;
+}
+
+plazza::PizzaSize plazza::Pizza::getSize() const
+{
+    return _size;
+}
+
+void plazza::Pizza::setSize(plazza::PizzaSize size)
+{
+    _size = size;
+}
+
+std::string plazza::Pizza::getSizeName() const
+{
+    return _sizeNames.at(_size);
+}
+
+plazza::Pizza &plazza::Pizza::getPizzaByType(plazza::PizzaType type, std::map<std::string, plazza::Pizza> &pizzas)
+{
+    for (auto &[name, pizza] : pizzas) {
+        if (pizza.getType() == type) {
+            return pizza;
+        }
+    }
+    throw std::runtime_error("Pizza not found");
+}
+
+plazza::Pizza &plazza::Pizza::getPizzaFromId(const unsigned long &id, std::map<unsigned long, plazza::Pizza> &pizzas)
+{
+    for (auto &pizza : pizzas) {
+        if (pizza.first == id) {
+            return pizza.second;
+        }
+    }
+    throw std::runtime_error("Pizza not found");
+}
+
+std::string plazza::Pizza::getIngredientName(plazza::PizzaIngredient ingredient)
+{
+    std::map<PizzaIngredient, std::string> ingredientNames = {
+        {PizzaIngredient::Dough, "Dough"},
+        {PizzaIngredient::Tomato, "Tomato"},
+        {PizzaIngredient::Gruyere, "Gruyere"},
+        {PizzaIngredient::Ham, "Ham"},
+        {PizzaIngredient::Mushrooms, "Mushrooms"},
+        {PizzaIngredient::Steak, "Steak"},
+        {PizzaIngredient::Eggplant, "Eggplant"},
+        {PizzaIngredient::GoatCheese, "GoatCheese"},
+        {PizzaIngredient::ChiefLove, "ChiefLove"},
+    };
+
+    return ingredientNames.at(ingredient);
 }
