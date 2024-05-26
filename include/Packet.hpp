@@ -51,16 +51,8 @@ namespace comm {
         PingPacket() : Packet(PING), _i(0) {}
         ~PingPacket() = default;
 
-        buffer::ByteBuf serialize() const override {
-            buffer::ByteBuf buffer;
-
-            buffer.writeInt(this->_i);
-            return buffer;
-        }
-
-        void deserialize(buffer::ByteBuf &buff) override {
-            this->_i = buff.readInt();
-        }
+        buffer::ByteBuf serialize() const override;
+        void deserialize(buffer::ByteBuf &buff) override;
 
         int getI() const { return this->_i; }
     private:
@@ -74,12 +66,9 @@ namespace comm {
 
         buffer::ByteBuf serialize() const override {
             buffer::ByteBuf buffer;
-
             return buffer;
         }
-
-        void deserialize(buffer::ByteBuf &buff) override {
-        }
+        void deserialize(buffer::ByteBuf &buff) override {}
     };
 
     class PizzaOrderPacket : public Packet {
@@ -88,35 +77,8 @@ namespace comm {
         PizzaOrderPacket(unsigned long id, plazza::Pizza pizza) : Packet(PIZZA_ORDER), _id(id), _pizza(pizza) {}
         ~PizzaOrderPacket() = default;
 
-        buffer::ByteBuf serialize() const override {
-            buffer::ByteBuf buffer;
-
-            buffer.writeUnsignedLong(this->_id);
-            buffer.writeLong(this->_pizza.getType());
-            buffer.writeDouble(this->_pizza.getCookingTime());
-            buffer.writeString(this->_pizza.getName());
-            buffer.writeInt(this->_pizza.getSize());
-            buffer.writeUnsignedLong(this->_pizza.getIngredients().size());
-            for (auto &ingredient : this->_pizza.getIngredients()) {
-                buffer.writeInt(ingredient);
-            }
-
-            return buffer;
-        }
-
-        void deserialize(buffer::ByteBuf &buff) override {
-            this->_id = buff.readUnsignedLong();
-            this->_pizza.setType((plazza::PizzaType) buff.readLong());
-            this->_pizza.setCookingTime(buff.readDouble());
-            this->_pizza.setName(buff.readString());
-            this->_pizza.setSize((plazza::PizzaSize) buff.readInt());
-            std::size_t ingredients_size = buff.readUnsignedLong();
-            std::vector<plazza::PizzaIngredient> ingredients;
-            for (std::size_t i = 0; i < ingredients_size; i++) {
-                ingredients.push_back((plazza::PizzaIngredient) buff.readInt());
-            }
-            this->_pizza.setIngredients(ingredients);
-        }
+        buffer::ByteBuf serialize() const override;
+        void deserialize(buffer::ByteBuf &buff) override;
 
         unsigned long getId() const { return this->_id; }
         plazza::Pizza getPizza() const { return this->_pizza; }
@@ -132,17 +94,8 @@ namespace comm {
         PizzaReadyPacket(unsigned long id) : Packet(PIZZA_READY), _id(id) {}
         ~PizzaReadyPacket() = default;
 
-        buffer::ByteBuf serialize() const override {
-            buffer::ByteBuf buffer;
-
-            buffer.writeUnsignedLong(this->_id);
-
-            return buffer;
-        }
-
-        void deserialize(buffer::ByteBuf &buff) override {
-            this->_id = buff.readUnsignedLong();
-        }
+        buffer::ByteBuf serialize() const;
+        void deserialize(buffer::ByteBuf &buff);
 
         unsigned long getId() const { return this->_id; }
 
@@ -156,19 +109,8 @@ namespace comm {
         PizzaChangeStatusPacket(unsigned long id, bool status) : Packet(PIZZA_CHANGE_STATUS), _id(id), _status(status) {}
         ~PizzaChangeStatusPacket() = default;
 
-        buffer::ByteBuf serialize() const override {
-            buffer::ByteBuf buffer;
-
-            buffer.writeUnsignedLong(this->_id);
-            buffer.writeInt(this->_status ? 1 : 0);
-
-            return buffer;
-        }
-
-        void deserialize(buffer::ByteBuf &buff) override {
-            this->_id = buff.readUnsignedLong();
-            this->_status = buff.readInt();
-        }
+        buffer::ByteBuf serialize() const;
+        void deserialize(buffer::ByteBuf &buff);
 
         unsigned long getId() const { return this->_id; }
         bool getStatus() const { return this->_status ? true : false; }
@@ -185,12 +127,9 @@ namespace comm {
 
         buffer::ByteBuf serialize() const override {
             buffer::ByteBuf buffer;
-
             return buffer;
         }
-
-        void deserialize(buffer::ByteBuf &buff) override {
-        }
+        void deserialize(buffer::ByteBuf &buff) override {}
     };
 
     class PacketHandler {
@@ -202,23 +141,7 @@ namespace comm {
             return this->_packet_constructors[type]();
         }
 
-        std::vector<std::shared_ptr<Packet>> constructPackets(buffer::ByteBuf buff) {
-            std::vector<std::shared_ptr<Packet>> packets;
-
-            while (buff.size() >= 4) {
-
-                Packet::Type type = (Packet::Type) buff.readInt();
-
-                if (this->_packet_constructors.find(type) != this->_packet_constructors.end()) {
-                    auto packet = this->_packet_constructors[type]();
-                    *packet << buff;
-                    packets.push_back(std::move(packet));
-                } else {
-                    plazza::Logger::printAndLog("Unknown packet type '" + std::to_string(type) + "'");
-                }
-            }
-            return packets;
-        }
+        std::vector<std::shared_ptr<Packet>> constructPackets(buffer::ByteBuf buff);
     private:
         std::map<Packet::Type, std::function<std::shared_ptr<Packet>()>> _packet_constructors = {
             {Packet::PING, []() { return std::make_shared<PingPacket>(); }},

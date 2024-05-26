@@ -117,26 +117,7 @@ namespace plazza {
             return *this;
         }
 
-        Kitchen &operator<<(Pizza &pizza) {
-            auto id = this->_holders.getNextPizzaId();
-            this->_pizzas[id] = pizza;
-
-            this->print("Dispatching " + pizza.getName() + " (size " + pizza.getSizeName() + ") to oven.");
-
-            // Decrease ovens count
-            this->_spec.decreaseOvens();
-
-            // Remove the ingredients from the stock
-            for (auto &ingredient : pizza.getIngredients()) {
-                this->_spec.getStock().consume(ingredient);
-            }
-
-            comm::PizzaOrderPacket packet(id, pizza);
-            *this << packet;
-
-            this->updateLastCommandMillis();
-            return *this;
-        }
+        Kitchen &operator<<(Pizza &pizza);
 
         void updateLastCommandMillis() {
             this->_last_command_millis = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -153,19 +134,7 @@ namespace plazza {
         KitchenSpec &getSpec() { return this->_spec; }
         std::map<unsigned long, Pizza> &getPizzas() { return this->_pizzas; }
 
-        void close() {
-            if (this->_close)
-                return;
-            this->_close = true;
-
-            comm::KitchenClosePacket packet;
-            *this << packet;
-
-            this->_input_pipe->destroy();
-            this->_output_pipe->destroy();
-
-            this->print("Closing kitchen");
-        }
+        void close();
         bool isClosed() { return this->_close; }
     private:
         Holders &_holders;
@@ -200,19 +169,9 @@ namespace plazza {
         std::map<unsigned long, Pizza> &getPizzaQueue() { return this->_pizza_queue; }
         std::mutex &getPizzaQueueMutex() { return this->_pizza_queue_mutex; }
 
-        void addPizzaToQueue(unsigned long id, Pizza pizza) {
-            this->_pizza_queue_mutex.lock();
-            this->_pizza_queue[id] = pizza;
-            this->_pizza_queue_mutex.unlock();
-        }
+        void addPizzaToQueue(unsigned long id, Pizza pizza);
 
-        bool hasEnoughIngredientsFor(Pizza &pizza) {
-            for (auto &ingredient : pizza.getIngredients()) {
-                if (this->_spec.getStock().getIngredient(ingredient) == 0)
-                    return false;
-            }
-            return true;
-        }
+        bool hasEnoughIngredientsFor(Pizza &pizza);
 
         void scheduleNextPizza();
 

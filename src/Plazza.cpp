@@ -227,3 +227,52 @@ std::shared_ptr<plazza::Kitchen> plazza::PizzaBalancer::balancePizza(plazza::Piz
 
     return kitchen;
 }
+
+plazza::Kitchen &plazza::Kitchen::operator<<(Pizza &pizza) {
+    auto id = this->_holders.getNextPizzaId();
+    this->_pizzas[id] = pizza;
+
+    this->print("Dispatching " + pizza.getName() + " (size " + pizza.getSizeName() + ") to oven.");
+
+    // Decrease ovens count
+    this->_spec.decreaseOvens();
+
+    // Remove the ingredients from the stock
+    for (auto &ingredient : pizza.getIngredients()) {
+        this->_spec.getStock().consume(ingredient);
+    }
+
+    comm::PizzaOrderPacket packet(id, pizza);
+    *this << packet;
+
+    this->updateLastCommandMillis();
+    return *this;
+}
+
+void plazza::Kitchen::close() {
+    if (this->_close)
+        return;
+    this->_close = true;
+
+    comm::KitchenClosePacket packet;
+    *this << packet;
+
+    this->_input_pipe->destroy();
+    this->_output_pipe->destroy();
+
+    this->print("Closing kitchen");
+}
+
+void plazza::LocalKitchen::addPizzaToQueue(unsigned long id, Pizza pizza) {
+    this->_pizza_queue_mutex.lock();
+    this->_pizza_queue[id] = pizza;
+    this->_pizza_queue_mutex.unlock();
+}
+
+bool plazza::LocalKitchen::hasEnoughIngredientsFor(Pizza &pizza) {
+    for (auto &ingredient : pizza.getIngredients()) {
+        if (this->_spec.getStock().getIngredient(ingredient) == 0)
+            return false;
+    }
+    return true;
+}
