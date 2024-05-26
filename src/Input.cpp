@@ -18,7 +18,7 @@ std::string plazza::Input::_getIngredientStock(plazza::KitchenSpec &spec)
     return stock;
 }
 
-std::string plazza::Input::_getOvenStates(plazza::Kitchen *kitchen)
+std::string plazza::Input::_getOvenStates(std::shared_ptr<plazza::Kitchen> kitchen)
 {
     std::string states = "";
     for (auto pizzaData = kitchen->getPizzas().begin(); pizzaData != kitchen->getPizzas().end(); pizzaData++) {
@@ -59,7 +59,7 @@ void plazza::Input::handleUserInput(
                 std::osyncstream(std::cout) << _getIngredientStock(kitchen->getSpec()) << std::endl;
                 std::osyncstream(std::cout) << "\tCurrent pizzas in this kitchen (cooking or waiting to be cooked): " << kitchen->getSpec().getCookers() * 2 - kitchen->getSpec().getOvens() << std::endl;
                 std::osyncstream(std::cout) << "\tOven capacity : " << kitchen->getSpec().getCookers() * 2 << std::endl;
-                std::osyncstream(std::cout) << _getOvenStates(kitchen.get());
+                std::osyncstream(std::cout) << _getOvenStates(kitchen);
                 std::osyncstream(std::cout) << std::endl;
             }
 

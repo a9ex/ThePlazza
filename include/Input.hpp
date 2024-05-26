@@ -33,7 +33,7 @@ namespace plazza {
              * @param kitchen the kitchen to get the oven states from
              * @return std::string the oven states
              */
-            static std::string _getOvenStates(plazza::Kitchen *kitchen);
+            static std::string _getOvenStates(std::shared_ptr<plazza::Kitchen> kitchen);
             /**
              * @brief Get the ingredient stock of a kitchen
              *
