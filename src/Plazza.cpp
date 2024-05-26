@@ -153,7 +153,7 @@ void plazza::PacketReceiver::onReceive(plazza::Holders &holders,
 
     if (comm::Packet::Type::PIZZA_CHANGE_STATUS == p.getType()) {
         comm::PizzaChangeStatusPacket packet = dynamic_cast<comm::PizzaChangeStatusPacket &>(p);
-        plazza::Pizza pizza = plazza::Pizza::getPizzaFromId(packet.getId(), kitchen.getPizzas());
+        plazza::Pizza &pizza = plazza::Pizza::getPizzaFromId(packet.getId(), kitchen.getPizzas());
         pizza.setIsCooking(packet.getStatus());
     }
 }
