@@ -10,6 +10,7 @@
 #include "File.hpp"
 #include "Buffer.hpp"
 #include "Pizza.hpp"
+#include "Logger.hpp"
 #include <string>
 #include <vector>
 #include <functional>
@@ -197,7 +198,7 @@ namespace comm {
                     *packet << buff;
                     packets.push_back(std::move(packet));
                 } else {
-                    std::osyncstream(std::cout) << "Unknown packet type '" << type << "'" << std::endl;
+                    plazza::Logger::printAndLog("Unknown packet type '" + std::to_string(type) + "'");
                 }
             }
             return packets;

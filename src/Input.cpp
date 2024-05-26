@@ -40,27 +40,28 @@ void plazza::Input::handleUserInput(
 {
     std::string input;
     while (true) {
-        std::osyncstream(std::cout) << "Benvenuti alla Papa's Pizzeria ! I'm Mario, what can I do for you ? (enter your order): ";
+        plazza::Logger::printAndLog("Benvenuti alla Papa's Pizzeria ! I'm Mario, what can I do for you ? (enter your order): ", true);
         std::getline(std::cin, input);
+        plazza::Logger::printAndLog(input, false, true);
 
         mutex.lock();
         if (input == "exit") {
-            std::osyncstream(std::cout) << "Thanks for visiting our Papa's Pizzeria ! Babaye !" << std::endl;
+            plazza::Logger::printAndLog("Thanks for visiting our Papa's Pizzeria ! Babaye !");
             std::exit(0);
         }
 
         if (input == "status") {
-            std::osyncstream(std::cout) << "Mama mia ! Buongiorno ! Here's the current status of the restaurant Papa's Pizzeria :\n" << std::endl;
-            std::osyncstream(std::cout) << "We have " << kitchens.size() << " kitchens opened at the moment.\n" << std::endl;
+            plazza::Logger::printAndLog("Mama mia ! Buongiorno ! Here's the current status of the restaurant Papa's Pizzeria :\n");
+            plazza::Logger::printAndLog("We have " + std::to_string(kitchens.size()) + " kitchens opened at the moment.\n");
 
             for (auto &kitchen : kitchens) {
-                std::osyncstream(std::cout) << "Kitchen " << kitchen->getSpec().getId() << " (" << kitchen->getSpec().getCookers() << " cookers) : " << (kitchen->getSpec().getOvens() == kitchen->getSpec().getCookers() * 2 ? "Waiting for commands (no pizzas) - closing soon..." : "Cooking pizzas") << std::endl;
-                std::osyncstream(std::cout) << "\tCurrent ingredients stock:" << std::endl;
-                std::osyncstream(std::cout) << _getIngredientStock(kitchen->getSpec()) << std::endl;
-                std::osyncstream(std::cout) << "\tCurrent pizzas in this kitchen (cooking or waiting to be cooked): " << kitchen->getSpec().getCookers() * 2 - kitchen->getSpec().getOvens() << std::endl;
-                std::osyncstream(std::cout) << "\tOven capacity : " << kitchen->getSpec().getCookers() * 2 << std::endl;
-                std::osyncstream(std::cout) << _getOvenStates(kitchen);
-                std::osyncstream(std::cout) << std::endl;
+                plazza::Logger::printAndLog("Kitchen " + kitchen->getSpec().getId() + " (" + std::to_string(kitchen->getSpec().getCookers()) + " cookers) : " + (kitchen->getSpec().getOvens() == kitchen->getSpec().getCookers() * 2 ? "Waiting for commands (no pizzas) - closing soon..." : "Cooking pizzas"));
+                plazza::Logger::printAndLog("\tCurrent ingredients stock:");
+                plazza::Logger::printAndLog(_getIngredientStock(kitchen->getSpec()));
+                plazza::Logger::printAndLog("\tCurrent pizzas in this kitchen (cooking or waiting to be cooked): " + std::to_string(kitchen->getSpec().getCookers() * 2 - kitchen->getSpec().getOvens()));
+                plazza::Logger::printAndLog("\tOven capacity : " + std::to_string(kitchen->getSpec().getCookers() * 2));
+                plazza::Logger::printAndLog(_getOvenStates(kitchen));
+                plazza::Logger::printAndLog("");
             }
 
             mutex.unlock();
@@ -86,7 +87,7 @@ void plazza::Input::handleUserInput(
             auto chosenKitchen = balancer.balancePizza(pizza, kitchens);
 
             if (!chosenKitchen) {
-                std::osyncstream(std::cout) << "No kitchen available! Creating a new one" << std::endl;
+                plazza::Logger::printAndLog("No kitchen available! Creating a new one");
                 plazza::KitchenSpec spec(std::to_string(kitchens.size()), 3);
                 kitchens.push_back(std::make_shared<plazza::Kitchen>(holders, spec));
                 chosenKitchen = kitchens.back();

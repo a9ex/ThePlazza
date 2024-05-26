@@ -14,6 +14,7 @@
 #include "ThreadPool.hpp"
 #include "IngredientStock.hpp"
 #include "Pizza.hpp"
+#include "Logger.hpp"
 #include <string>
 #include <optional>
 #include <memory>
@@ -102,11 +103,11 @@ namespace plazza {
         }
 
         void print(std::string const &text) {
-            std::osyncstream(std::cout) << "[Kitchen " << this->_spec.getId() << "] " << text << std::endl;
+            plazza::Logger::printAndLog("[Kitchen " + this->_spec.getId() + "] " + text);
         }
 
         Kitchen &operator<<(std::string const &text) {
-            std::osyncstream(std::cout) << "[Kitchen " << this->_spec.getId() << "] " << text << std::endl;
+            plazza::Logger::printAndLog("[Kitchen " + this->_spec.getId() + "] " + text);
             return *this;
         }
 
@@ -177,7 +178,7 @@ namespace plazza {
         }
 
         LocalKitchen &operator<<(std::string const &text) {
-            std::osyncstream(std::cout) << "[LocalKitchen " << this->_spec.getId() << "] " << text << std::endl;
+            plazza::Logger::printAndLog("[LocalKitchen " + this->_spec.getId() + "] " + text);
             return *this;
         }
 
