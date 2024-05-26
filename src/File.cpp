@@ -69,7 +69,7 @@ buffer::ByteBuf file::Pipe::readBuf()
 
     n = read(this->_fd, buf, 4096);
     if (n == -1) {
-        perror("read");
+        std::perror("read");
         throw std::runtime_error("Failed to read from pipe");
     }
 

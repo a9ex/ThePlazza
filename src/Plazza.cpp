@@ -80,39 +80,18 @@ plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec
 
     // Init thread pool
     size_t thread_count = this->_spec.getOvens();
-
-    // We need to add 1 thread for the reception dispatcher
-    // thread_count++;
-
-    // And another thread for the stock refill
     thread_count++;
 
     this->_thread_pool = std::make_unique<ThreadPool>(thread_count);
     this->_thread_pool->run();
-
-    // this->_thread_pool->addTask([this] {
-    //     comm::PacketHandler packet_handler;
-    //     while (true) {
-    //         std::vector<std::shared_ptr<comm::Packet>> packets = packet_handler.constructPackets(this->_input_pipe->readBuf());
-    //         if (!packets.empty()) {
-    //             std::osyncstream(std::cout) << "LocalKitchen received packets" << std::endl;
-    //             for (auto &packet : packets)
-    //                 this->onPacketReceived(*packet);
-    //         }
-    //     }
-    // });
 
     this->_thread_pool->addTask([this] {
         while (!this->_close) {
             std::this_thread::sleep_for(std::chrono::milliseconds(plazza::PlazzaSpecs::getInstance().getSpec().refresh_rate));
             this->_spec.getStock().refillAll();
             comm::KitchenRefillPacket() >> *this->_output_pipe;
-            // std::osyncstream(std::cout) << "Refill sent" << std::endl;
         }
     });
-
-    // Wait 1s
-    // std::this_thread::sleep_for(std::chrono::seconds(1));
 
     comm::PacketHandler packet_handler;
     while (!this->_close) {
@@ -247,4 +226,53 @@ std::shared_ptr<plazza::Kitchen> plazza::PizzaBalancer::balancePizza(plazza::Piz
         kitchen = kitchens.front();
 
     return kitchen;
+}
+
+plazza::Kitchen &plazza::Kitchen::operator<<(Pizza &pizza) {
+    auto id = this->_holders.getNextPizzaId();
+    this->_pizzas[id] = pizza;
+
+    this->print("Dispatching " + pizza.getName() + " (size " + pizza.getSizeName() + ") to oven.");
+
+    // Decrease ovens count
+    this->_spec.decreaseOvens();
+
+    // Remove the ingredients from the stock
+    for (auto &ingredient : pizza.getIngredients()) {
+        this->_spec.getStock().consume(ingredient);
+    }
+
+    comm::PizzaOrderPacket packet(id, pizza);
+    *this << packet;
+
+    this->updateLastCommandMillis();
+    return *this;
+}
+
+void plazza::Kitchen::close() {
+    if (this->_close)
+        return;
+    this->_close = true;
+
+    comm::KitchenClosePacket packet;
+    *this << packet;
+
+    this->_input_pipe->destroy();
+    this->_output_pipe->destroy();
+
+    this->print("Closing kitchen");
+}
+
+void plazza::LocalKitchen::addPizzaToQueue(unsigned long id, Pizza pizza) {
+    this->_pizza_queue_mutex.lock();
+    this->_pizza_queue[id] = pizza;
+    this->_pizza_queue_mutex.unlock();
+}
+
+bool plazza::LocalKitchen::hasEnoughIngredientsFor(Pizza &pizza) {
+    for (auto &ingredient : pizza.getIngredients()) {
+        if (this->_spec.getStock().getIngredient(ingredient) == 0)
+            return false;
+    }
+    return true;
 }
