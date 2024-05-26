@@ -21,7 +21,7 @@ plazza::Kitchen::Kitchen(plazza::Holders &holders, plazza::KitchenSpec spec)
     // After creating the LocalKitchen, we double the amount of ovens (double the capacity)
     this->_spec.doubleOvens();
 
-    std::cout << "Creating Kitchen named '" << this->_spec.getId() << "'" << std::endl;
+    std::osyncstream(std::cout) << "Creating Kitchen named '" << this->_spec.getId() << "'" << std::endl;
 
     // Create pipes
     this->_input_pipe = std::make_unique<file::Pipe>(
@@ -95,7 +95,7 @@ plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec
     //     while (true) {
     //         std::vector<std::shared_ptr<comm::Packet>> packets = packet_handler.constructPackets(this->_input_pipe->readBuf());
     //         if (!packets.empty()) {
-    //             std::cout << "LocalKitchen received packets" << std::endl;
+    //             std::osyncstream(std::cout) << "LocalKitchen received packets" << std::endl;
     //             for (auto &packet : packets)
     //                 this->onPacketReceived(*packet);
     //         }
@@ -107,7 +107,7 @@ plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec
             std::this_thread::sleep_for(std::chrono::seconds(5));
             this->_spec.getStock().refillAll();
             comm::KitchenRefillPacket() >> *this->_output_pipe;
-            std::cout << "Refill sent" << std::endl;
+            // std::osyncstream(std::cout) << "Refill sent" << std::endl;
         }
     });
 
@@ -125,7 +125,7 @@ plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec
 
     this->_thread_pool->close(false);
 
-    std::cout << "Fork finished" << std::endl;
+    std::osyncstream(std::cout) << "Fork finished" << std::endl;
 }
 
 void plazza::PacketReceiver::onReceive(plazza::Holders &holders,
@@ -140,7 +140,9 @@ void plazza::PacketReceiver::onReceive(plazza::Holders &holders,
 
    if (comm::Packet::Type::PIZZA_READY == p.getType()) {
         comm::PizzaReadyPacket packet = dynamic_cast<comm::PizzaReadyPacket &>(p);
-        kitchen.print("Pizza ready: " + std::to_string(packet.getId()));
+        plazza::Pizza pizza = plazza::Pizza::getPizzaFromId(packet.getId(), kitchen.getPizzas());
+
+        kitchen.print("Pizza " + pizza.getName() + " (size " + pizza.getSizeName() + ") is ready !");
         kitchen.getSpec().increaseOvens();
 
         // Remove pizza from kitchen
@@ -156,7 +158,7 @@ void plazza::LocalKitchen::onPacketReceived(comm::Packet &packet)
         comm::PizzaOrderPacket pizza_order_packet = dynamic_cast<comm::PizzaOrderPacket &>(packet);
 
         this->_thread_pool->addTask([this, pizza_order_packet] {
-            *this << "Cooking pizza " + pizza_order_packet.getPizza().getName();
+            *this << "Cooking pizza " + pizza_order_packet.getPizza().getName() + " (size " + pizza_order_packet.getPizza().getSizeName() + ")";
             std::this_thread::sleep_for(std::chrono::milliseconds(((long) (pizza_order_packet.getPizza().getCookingTime() * 1000))));
             comm::PizzaReadyPacket(pizza_order_packet.getId()) >> *this->_output_pipe;
         });

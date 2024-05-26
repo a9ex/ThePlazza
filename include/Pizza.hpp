@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -87,6 +88,27 @@ namespace plazza {
             std::vector<PizzaIngredient> getIngredients() const;
 
             /**
+             * @brief Get the size of the pizza
+             *
+             * @return PizzaSize the size of the pizza
+             */
+            PizzaSize getSize() const;
+
+            /**
+             * @brief Get the display name of the size of the pizza
+             *
+             * @return std::string the name of the size of the pizza
+             */
+            std::string getSizeName() const;
+
+            /**
+             * @brief Set the size of the pizza
+             *
+             * @param size the size of the pizza
+             */
+            void setSize(PizzaSize size);
+
+            /**
              * @brief Set the cooking time of the pizza
              *
              * @param time the cooking time in seconds
@@ -110,11 +132,38 @@ namespace plazza {
              * @param ingredients a vector of ingredients
              */
             void setIngredients(const std::vector<PizzaIngredient> &ingredients);
+
+            /**
+            * @brief Get a Pizza by its type
+            *
+            * @param type the type
+            * @param pizzas the map of pizzas
+            * @return Pizza the pizza
+            */
+            static Pizza getPizzaByType(plazza::PizzaType type, std::map<std::string, plazza::Pizza> &pizzas);
+
+            /**
+             * @brief Get the Pizza from its id
+             *
+             * @param id the id
+             * @param pizzas the map of pizzas
+             * @return Pizza the pizza
+             */
+            static Pizza getPizzaFromId(const unsigned long &id, const std::map<unsigned long, plazza::Pizza> &pizzas);
         protected:
         private:
             double _cookingTime;
             PizzaType _type;
+            PizzaSize _size = PizzaSize::M;
             std::string _name;
             std::vector<PizzaIngredient> _ingredients;
+
+            std::map<PizzaSize, std::string> _sizeNames = {
+                {PizzaSize::S, "S"},
+                {PizzaSize::M, "M"},
+                {PizzaSize::L, "L"},
+                {PizzaSize::XL, "XL"},
+                {PizzaSize::XXL, "XXL"},
+            };
     };
 }
