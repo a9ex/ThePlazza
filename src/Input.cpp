@@ -47,7 +47,7 @@ void plazza::Input::handleUserInput(
                 std::osyncstream(std::cout) << "\tOven capacity : " << kitchen->getSpec().getCookers() * 2 << std::endl;
                 for (auto pizzaData = kitchen->getPizzas().begin(); pizzaData != kitchen->getPizzas().end(); pizzaData++) {
                         auto pizza = pizzaData->second;
-                        std::osyncstream(std::cout) << "\t\t- " << pizza.getName() << " (size " << pizza.getSizeName() << "): " << (pizza.getIsCooking() ? "cooked" : "waiting to be cooked") << std::endl;
+                        std::osyncstream(std::cout) << "\t\t- " << pizza.getName() << " (size " << pizza.getSizeName() << "): " << (pizza.getIsCooking() ? "cooking" : "waiting to be cooked") << std::endl;
                 }
                 for (unsigned int i = 0; i < kitchen->getSpec().getOvens(); i++) {
                     std::osyncstream(std::cout) << "\t\t- Empty oven" << std::endl;
