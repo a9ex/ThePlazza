@@ -209,4 +209,53 @@ namespace plazza {
         std::shared_ptr<plazza::Kitchen> balancePizza(plazza::Pizza &pizza,
             std::vector<std::shared_ptr<Kitchen>> kitchens);
     };
+
+    // PlazzaSpecs is a singleton, to be easily accessible from anywhere
+    class PlazzaSpecs {
+        public:
+            /**
+            * @brief Remove the copy constructor and the assign operator, as it is a singleton
+            */
+            PlazzaSpecs(const PlazzaSpecs &) = delete;
+            PlazzaSpecs &operator=(const PlazzaSpecs &) = delete;
+
+            /**
+             * @brief PlazzaSpec struct
+             *
+             */
+            struct PlazzaSpec {
+                unsigned long multiplier;
+                unsigned int cooks;
+                unsigned int refresh_rate;
+            };
+
+            /**
+             * @brief Get the Instance object
+             *
+             * @return PlazzaSpecs& the instance of PlazzaSpecs
+             */
+            static PlazzaSpecs &getInstance() {
+                static PlazzaSpecs instance;
+                return instance;
+            }
+
+            /**
+             * @brief Get the PlazzaSpec object
+             *
+             * @return PlazzaSpec& the PlazzaSpec object
+             */
+            PlazzaSpec &getSpec() { return this->_spec; }
+
+            /**
+             * @brief Set the Spec object
+             *
+             * @param spec the PlazzaSpec object to set
+             */
+            void setSpec(PlazzaSpec spec) { this->_spec = spec; }
+        private:
+            PlazzaSpecs() = default;
+            ~PlazzaSpecs() = default;
+
+            PlazzaSpec _spec;
+    };
 }

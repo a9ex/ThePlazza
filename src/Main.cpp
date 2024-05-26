@@ -50,14 +50,41 @@ void addRestaurantPizzas(std::map<std::string, plazza::Pizza> &pizzas)
         .addPizzaToMap(pizzas);
 }
 
-int main(void)
+void computeArguments(int ac, char **av)
+{
+    plazza::PlazzaSpecs::PlazzaSpec specs;
+
+    if (ac != 4) {
+        std::cerr << "Bad number of args" << std::endl;
+        std::exit(84);
+    }
+    if (std::stof(av[1]) <= 0 || std::string(av[2]).find_first_not_of("0123456789.") != std::string::npos) {
+        std::cerr << "Bad mutiplicator" << std::endl;
+        std::exit(84);
+    }
+    if (std::stoi(av[2]) <= 0 || std::string(av[2]).find_first_not_of("0123456789") != std::string::npos) {
+        std::cerr << "Bad number of cooks" << std::endl;
+        std::exit(84);
+    }
+    if (std::stoi(av[3]) <= 0 || std::string(av[3]).find_first_not_of("0123456789") != std::string::npos) {
+        std::cerr << "Bad restock time" << std::endl;
+        std::exit(84);
+    }
+
+    specs.multiplier = std::stof(av[1]);
+    specs.cooks = std::stoi(av[2]);
+    specs.refresh_rate = std::stoi(av[3]);
+
+    plazza::PlazzaSpecs::getInstance().setSpec(specs);
+}
+
+int main(int ac, char **av)
 {
     plazza::Holders holders;
     std::map<std::string, plazza::Pizza> pizzas;
-
-    int numberOfKitchens = 3;
-    unsigned int ovensPerKitchen = 3;
     std::vector<std::shared_ptr<plazza::Kitchen>> kitchens;
+
+    computeArguments(ac, av);
 
     addRestaurantPizzas(pizzas);
 

@@ -87,7 +87,7 @@ plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec
 
     this->_thread_pool->addTask([this] {
         while (!this->_close) {
-            std::this_thread::sleep_for(std::chrono::seconds(5));
+            std::this_thread::sleep_for(std::chrono::milliseconds(plazza::PlazzaSpecs::getInstance().getSpec().refresh_rate));
             this->_spec.getStock().refillAll();
             comm::KitchenRefillPacket() >> *this->_output_pipe;
         }
@@ -173,7 +173,7 @@ void plazza::LocalKitchen::scheduleNextPizza() {
                     auto p = pizza.second;
                     *this << "Cooking pizza " + p.getName() + " (size " + p.getSizeName() + ")";
                     comm::PizzaChangeStatusPacket(pizza.first, true) >> *this->_output_pipe;
-                    std::this_thread::sleep_for(std::chrono::milliseconds(((long) (p.getCookingTime() * 1000))));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(((long) ((p.getCookingTime() * 1000) * plazza::PlazzaSpecs::getInstance().getSpec().multiplier))));
                     comm::PizzaReadyPacket(pizza.first) >> *this->_output_pipe;
                     {
                         std::lock_guard<std::mutex> lock(this->_oven_mutex);

@@ -53,9 +53,19 @@ void plazza::Input::handleUserInput(
 
         if (input == "status") {
             plazza::Logger::printAndLog("Mama mia ! Buongiorno ! Here's the current status of the restaurant Papa's Pizzeria :\n");
-            plazza::Logger::printAndLog("We have " + std::to_string(kitchens.size()) + " kitchens opened at the moment.\n");
+
+            std::vector<std::shared_ptr<plazza::Kitchen>> kitchensFiltered;
+            std::remove_copy_if(kitchens.begin(), kitchens.end(), std::back_inserter(kitchensFiltered), [](std::shared_ptr<plazza::Kitchen> &kitchen) {
+                return kitchen->isClosed();
+            });
+
+            plazza::Logger::printAndLog("We have " + std::to_string(kitchensFiltered.size()) + " kitchen(s) open and " + std::to_string(kitchens.size() - kitchensFiltered.size()) + " kitchen(s) closed\n");
 
             for (auto &kitchen : kitchens) {
+                if (kitchen->isClosed()) {
+                    plazza::Logger::printAndLog("Kitchen " + kitchen->getSpec().getId() + " (" + std::to_string(kitchen->getSpec().getCookers()) + " cookers) : Closed due to inactivity\n");
+                    continue;
+                }
                 plazza::Logger::printAndLog("Kitchen " + kitchen->getSpec().getId() + " (" + std::to_string(kitchen->getSpec().getCookers()) + " cookers) : " + (kitchen->getSpec().getOvens() == kitchen->getSpec().getCookers() * 2 ? "Waiting for commands (no pizzas) - closing soon..." : "Cooking pizzas"));
                 plazza::Logger::printAndLog("\tCurrent ingredients stock:");
                 plazza::Logger::printAndLog(_getIngredientStock(kitchen->getSpec()));
@@ -89,7 +99,7 @@ void plazza::Input::handleUserInput(
 
             if (!chosenKitchen) {
                 plazza::Logger::printAndLog("No kitchen available! Creating a new one");
-                plazza::KitchenSpec spec(std::to_string(kitchens.size()), 3);
+                plazza::KitchenSpec spec(std::to_string(kitchens.size()), plazza::PlazzaSpecs::getInstance().getSpec().cooks);
                 kitchens.push_back(std::make_shared<plazza::Kitchen>(holders, spec));
                 chosenKitchen = kitchens.back();
             }
