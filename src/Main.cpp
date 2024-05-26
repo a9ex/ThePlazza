@@ -54,19 +54,27 @@ void computeArguments(int ac, char **av)
 {
     plazza::PlazzaSpecs::PlazzaSpec specs;
 
+    if (ac == 2 && std::string(av[1]) == "-h") {
+        std::cout << "USAGE: ./plazza [multiplier] [nb_cooks_per_kitchen] [restock_delay]" << std::endl;
+        std::cout << "\t- multiplier - positive float (can be between 0 and 1 to use this as a divider): Used to multiply the cooking time of the pizzas" << std::endl;
+        std::cout << "\t- nb_cooks_per_kitchen - positive integer: Number of cooks per kitchen" << std::endl;
+        std::cout << "\t- restock_delay - positive integer: Time in milliseconds to restock one unit of each ingredients (per kitchen)\n" << std::endl;
+        std::cout << "Futhermore, you can use 'status' to display the status of the kitchens in real time, and 'exit' to close the program gracefully." << std::endl;
+        std::exit(0);
+    }
     if (ac != 4) {
         std::cerr << "Bad number of args" << std::endl;
         std::exit(84);
     }
-    if (std::stof(av[1]) <= 0 || std::string(av[2]).find_first_not_of("0123456789.") != std::string::npos) {
+    if (std::string(av[2]).find_first_not_of("0123456789.") != std::string::npos || std::stof(av[1]) <= 0) {
         std::cerr << "Bad mutiplicator" << std::endl;
         std::exit(84);
     }
-    if (std::stoi(av[2]) <= 0 || std::string(av[2]).find_first_not_of("0123456789") != std::string::npos) {
+    if (std::string(av[2]).find_first_not_of("0123456789") != std::string::npos || std::stoi(av[2]) <= 0) {
         std::cerr << "Bad number of cooks" << std::endl;
         std::exit(84);
     }
-    if (std::stoi(av[3]) <= 0 || std::string(av[3]).find_first_not_of("0123456789") != std::string::npos) {
+    if (std::string(av[3]).find_first_not_of("0123456789") != std::string::npos || std::stoi(av[3]) <= 0) {
         std::cerr << "Bad restock time" << std::endl;
         std::exit(84);
     }
