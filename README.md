@@ -32,4 +32,4 @@ In the program, we often use `binary_semaphore` instead of `mutex` because semap
 
 ### Usage of singletons
 
-Singletons are used in `...` and `...`. We is them because...
+Singletons are used in the logger and arguments components. We use them because they allow us to have a single instance of a class that is shared across the program. This is useful for us because we only need one instance of the logger and arguments components. This allows us to easily access these components from anywhere in the program.
