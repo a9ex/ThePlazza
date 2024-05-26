@@ -173,16 +173,13 @@ void plazza::LocalKitchen::scheduleNextPizza() {
 
         if (this->_pizza_queue.empty())
             return;
-        std::cout << "Pizza queue is not empty" << std::endl;
         this->_oven_mutex.lock();
         if (this->_spec.getOvens() == 0) {
             this->_oven_mutex.unlock();
             return;
         }
         this->_oven_mutex.unlock();
-        std::cout << "Ovens are available" << std::endl;
         for (auto &pizza : this->_pizza_queue) {
-            std::cout << "Checking pizza " << pizza.first << std::endl;
             if (this->hasEnoughIngredientsFor(pizza.second)) {
                 this->_thread_pool->addTask([this, pizza] {
                     {
