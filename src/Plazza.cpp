@@ -80,39 +80,18 @@ plazza::LocalKitchen::LocalKitchen(plazza::Holders &holders, plazza::KitchenSpec
 
     // Init thread pool
     size_t thread_count = this->_spec.getOvens();
-
-    // We need to add 1 thread for the reception dispatcher
-    // thread_count++;
-
-    // And another thread for the stock refill
     thread_count++;
 
     this->_thread_pool = std::make_unique<ThreadPool>(thread_count);
     this->_thread_pool->run();
-
-    // this->_thread_pool->addTask([this] {
-    //     comm::PacketHandler packet_handler;
-    //     while (true) {
-    //         std::vector<std::shared_ptr<comm::Packet>> packets = packet_handler.constructPackets(this->_input_pipe->readBuf());
-    //         if (!packets.empty()) {
-    //             std::osyncstream(std::cout) << "LocalKitchen received packets" << std::endl;
-    //             for (auto &packet : packets)
-    //                 this->onPacketReceived(*packet);
-    //         }
-    //     }
-    // });
 
     this->_thread_pool->addTask([this] {
         while (!this->_close) {
             std::this_thread::sleep_for(std::chrono::seconds(5));
             this->_spec.getStock().refillAll();
             comm::KitchenRefillPacket() >> *this->_output_pipe;
-            // std::osyncstream(std::cout) << "Refill sent" << std::endl;
         }
     });
-
-    // Wait 1s
-    // std::this_thread::sleep_for(std::chrono::seconds(1));
 
     comm::PacketHandler packet_handler;
     while (!this->_close) {

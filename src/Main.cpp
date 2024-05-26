@@ -22,32 +22,32 @@
 void addRestaurantPizzas(std::map<std::string, plazza::Pizza> &pizzas)
 {
     plazza::PizzaBuilder()
-    .setCookingTime(1)
-    .setIngredients({plazza::PizzaIngredient::Dough, plazza::PizzaIngredient::Tomato, plazza::PizzaIngredient::Gruyere})
-    .setPizzaName("margarita")
-    .setPizzaType(plazza::PizzaType::Margarita)
-    .addPizzaToMap(pizzas);
+        .setCookingTime(1)
+        .setIngredients({plazza::PizzaIngredient::Dough, plazza::PizzaIngredient::Tomato, plazza::PizzaIngredient::Gruyere})
+        .setPizzaName("margarita")
+        .setPizzaType(plazza::PizzaType::Margarita)
+        .addPizzaToMap(pizzas);
 
     plazza::PizzaBuilder()
-    .setCookingTime(2)
-    .setPizzaName("regina")
-    .setIngredients({plazza::PizzaIngredient::Dough, plazza::PizzaIngredient::Tomato, plazza::PizzaIngredient::Gruyere, plazza::PizzaIngredient::Ham, plazza::PizzaIngredient::Mushrooms})
-    .setPizzaType(plazza::PizzaType::Regina)
-    .addPizzaToMap(pizzas);
+        .setCookingTime(2)
+        .setPizzaName("regina")
+        .setIngredients({plazza::PizzaIngredient::Dough, plazza::PizzaIngredient::Tomato, plazza::PizzaIngredient::Gruyere, plazza::PizzaIngredient::Ham, plazza::PizzaIngredient::Mushrooms})
+        .setPizzaType(plazza::PizzaType::Regina)
+        .addPizzaToMap(pizzas);
 
     plazza::PizzaBuilder()
-    .setCookingTime(2)
-    .setPizzaName("americana")
-    .setIngredients({plazza::PizzaIngredient::Dough, plazza::PizzaIngredient::Tomato, plazza::PizzaIngredient::Gruyere, plazza::PizzaIngredient::Steak})
-    .setPizzaType(plazza::PizzaType::Americana)
-    .addPizzaToMap(pizzas);
+        .setCookingTime(2)
+        .setPizzaName("americana")
+        .setIngredients({plazza::PizzaIngredient::Dough, plazza::PizzaIngredient::Tomato, plazza::PizzaIngredient::Gruyere, plazza::PizzaIngredient::Steak})
+        .setPizzaType(plazza::PizzaType::Americana)
+        .addPizzaToMap(pizzas);
 
     plazza::PizzaBuilder()
-    .setCookingTime(4)
-    .setPizzaName("fantasia")
-    .setIngredients({plazza::PizzaIngredient::Dough, plazza::PizzaIngredient::Tomato, plazza::PizzaIngredient::Eggplant, plazza::PizzaIngredient::GoatCheese, plazza::PizzaIngredient::ChiefLove})
-    .setPizzaType(plazza::PizzaType::Fantasia)
-    .addPizzaToMap(pizzas);
+        .setCookingTime(4)
+        .setPizzaName("fantasia")
+        .setIngredients({plazza::PizzaIngredient::Dough, plazza::PizzaIngredient::Tomato, plazza::PizzaIngredient::Eggplant, plazza::PizzaIngredient::GoatCheese, plazza::PizzaIngredient::ChiefLove})
+        .setPizzaType(plazza::PizzaType::Fantasia)
+        .addPizzaToMap(pizzas);
 }
 
 int main(void)
@@ -58,10 +58,6 @@ int main(void)
     int numberOfKitchens = 3;
     unsigned int ovensPerKitchen = 3;
     std::vector<std::shared_ptr<plazza::Kitchen>> kitchens;
-    // for (int i = 0; i < numberOfKitchens; i++) {
-    //     plazza::KitchenSpec spec(std::to_string(i), 3);
-    //     kitchens.push_back(std::make_shared<plazza::Kitchen>(holders, spec));
-    // }
 
     addRestaurantPizzas(pizzas);
 
