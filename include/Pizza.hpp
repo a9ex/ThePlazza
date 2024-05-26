@@ -154,7 +154,7 @@ namespace plazza {
             * @param pizzas the map of pizzas
             * @return Pizza the pizza
             */
-            static Pizza getPizzaByType(plazza::PizzaType type, std::map<std::string, plazza::Pizza> &pizzas);
+            static Pizza &getPizzaByType(plazza::PizzaType type, std::map<std::string, plazza::Pizza> &pizzas);
 
             /**
              * @brief Get the Pizza from its id
@@ -163,7 +163,7 @@ namespace plazza {
              * @param pizzas the map of pizzas
              * @return Pizza the pizza
              */
-            static Pizza getPizzaFromId(const unsigned long &id, const std::map<unsigned long, plazza::Pizza> &pizzas);
+            static Pizza &getPizzaFromId(const unsigned long &id, std::map<unsigned long, plazza::Pizza> &pizzas);
 
             /**
              * @brief Get the name of an ingredient from its enum
