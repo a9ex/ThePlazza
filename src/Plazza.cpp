@@ -162,13 +162,48 @@ void plazza::LocalKitchen::onPacketReceived(comm::Packet &packet)
 {
     if (comm::Packet::Type::PIZZA_ORDER == packet.getType()) {
         comm::PizzaOrderPacket pizza_order_packet = dynamic_cast<comm::PizzaOrderPacket &>(packet);
+        this->addPizzaToQueue(pizza_order_packet.getId(), pizza_order_packet.getPizza());
+        this->scheduleNextPizza();
+    }
+}
 
-        this->_thread_pool->addTask([this, pizza_order_packet] {
-            *this << "Cooking pizza " + pizza_order_packet.getPizza().getName() + " (size " + pizza_order_packet.getPizza().getSizeName() + ")";
-            comm::PizzaChangeStatusPacket(pizza_order_packet.getId(), true) >> *this->_output_pipe;
-            std::this_thread::sleep_for(std::chrono::milliseconds(((long) (pizza_order_packet.getPizza().getCookingTime() * 1000))));
-            comm::PizzaReadyPacket(pizza_order_packet.getId()) >> *this->_output_pipe;
-        });
+void plazza::LocalKitchen::scheduleNextPizza() {
+    {
+        std::lock_guard<std::mutex> lock(this->_pizza_queue_mutex);
+
+        if (this->_pizza_queue.empty())
+            return;
+        std::cout << "Pizza queue is not empty" << std::endl;
+        this->_oven_mutex.lock();
+        if (this->_spec.getOvens() == 0) {
+            this->_oven_mutex.unlock();
+            return;
+        }
+        this->_oven_mutex.unlock();
+        std::cout << "Ovens are available" << std::endl;
+        for (auto &pizza : this->_pizza_queue) {
+            std::cout << "Checking pizza " << pizza.first << std::endl;
+            if (this->hasEnoughIngredientsFor(pizza.second)) {
+                this->_thread_pool->addTask([this, pizza] {
+                    {
+                        std::lock_guard<std::mutex> lock(this->_oven_mutex);
+                        this->_spec.decreaseOvens();
+                    }
+                    auto p = pizza.second;
+                    *this << "Cooking pizza " + p.getName() + " (size " + p.getSizeName() + ")";
+                    comm::PizzaChangeStatusPacket(pizza.first, true) >> *this->_output_pipe;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(((long) (p.getCookingTime() * 1000))));
+                    comm::PizzaReadyPacket(pizza.first) >> *this->_output_pipe;
+                    {
+                        std::lock_guard<std::mutex> lock(this->_oven_mutex);
+                        this->_spec.increaseOvens();
+                    }
+                    this->scheduleNextPizza();
+                });
+                this->_pizza_queue.erase(pizza.first);
+                break;
+            }
+        }
     }
 }
 

@@ -182,11 +182,35 @@ namespace plazza {
         }
 
         void onPacketReceived(comm::Packet &packet);
+
+        std::map<unsigned long, Pizza> &getPizzaQueue() { return this->_pizza_queue; }
+        std::mutex &getPizzaQueueMutex() { return this->_pizza_queue_mutex; }
+
+        void addPizzaToQueue(unsigned long id, Pizza pizza) {
+            this->_pizza_queue_mutex.lock();
+            this->_pizza_queue[id] = pizza;
+            this->_pizza_queue_mutex.unlock();
+        }
+
+        bool hasEnoughIngredientsFor(Pizza &pizza) {
+            for (auto &ingredient : pizza.getIngredients()) {
+                if (this->_spec.getStock().getIngredient(ingredient) == 0)
+                    return false;
+            }
+            return true;
+        }
+
+        void scheduleNextPizza();
+
+        std::mutex &getOvenMutex() { return this->_oven_mutex; }
     private:
         KitchenSpec _spec;
         std::unique_ptr<file::Pipe> _input_pipe = std::unique_ptr<file::Pipe>(nullptr);
         std::unique_ptr<file::Pipe> _output_pipe = std::unique_ptr<file::Pipe>(nullptr);
         std::unique_ptr<ThreadPool> _thread_pool = std::unique_ptr<ThreadPool>(nullptr);
+        std::map<unsigned long, Pizza> _pizza_queue;
+        std::mutex _pizza_queue_mutex;
+        std::mutex _oven_mutex;
     };
 
     class PlazzaContext {
