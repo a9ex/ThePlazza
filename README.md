@@ -1,5 +1,7 @@
 # The Plazza
 
+Subject can be found [here]([Subject]B-CCP-400_plazza.pdf)
+
 ## Project description
 
 Mama mia! The Plazza is a software that manages the pizza cooking process. The software is composed of two main components: the reception and the kitchen. The reception is responsible for receiving orders from the user and sending them to the kitchen. The kitchen is responsible for cooking the pizzas and sending them back to the reception.
